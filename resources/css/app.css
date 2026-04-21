@@ -1,0 +1,80 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.min.css';
+
+body {
+    font-family: 'Sarabun', 'Segoe UI', sans-serif;
+    background-color: #f5f7fa;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.3px;
+}
+
+.sidebar {
+    min-height: calc(100vh - 56px);
+    background: linear-gradient(180deg, #2c3e50 0%, #3d5166 100%);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.12);
+}
+
+.sidebar .nav-link {
+    color: rgba(255,255,255,0.75);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: #ffffff;
+    padding-left: 1.75rem;
+}
+
+.sidebar .nav-link.active {
+    background: rgba(255,255,255,0.15);
+    color: #ffffff;
+    border-left: 3px solid #4fc3f7;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border-radius: 12px;
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.stat-card {
+    border-left: 4px solid !important;
+}
+
+.table thead th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    color: #555;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.4em 0.75em;
+}
+
+.btn {
+    font-weight: 500;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4fc3f7;
+    box-shadow: 0 0 0 0.2rem rgba(79,195,247,0.25);
+}
+
+.smaller {
+    font-size: 0.75rem;
+}
