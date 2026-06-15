@@ -1,0 +1,37 @@
+{
+  "__plugin-vue_export-helper-I3ldm912.js": {
+    "file": "assets/_plugin-vue_export-helper-I3ldm912.js",
+    "name": "_plugin-vue_export-helper"
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
+    "file": "assets/bootstrap-icons-BeopsB42.woff",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff"
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2": {
+    "file": "assets/bootstrap-icons-mSm7cUeB.woff2",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-BkuU6i2h.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/admin/app.js": {
+    "file": "assets/app-CAP4RtXR.js",
+    "name": "app",
+    "src": "resources/js/admin/app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-I3ldm912.js"
+    ]
+  },
+  "resources/js/student/app.js": {
+    "file": "assets/app-iZDSvn7X.js",
+    "name": "app",
+    "src": "resources/js/student/app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-I3ldm912.js"
+    ]
+  }
+}
