@@ -1,4 +1,4 @@
-import { createApp, ref, onMounted } from 'vue';
+import { createApp, computed, ref, onMounted } from 'vue';
 import AdminDashboardComponent from '../components/admin/AdminDashboard.vue';
 import TeacherManagerComponent from '../components/admin/TeacherManager.vue';
 import StudentListComponent from '../components/admin/StudentList.vue';
@@ -158,25 +158,55 @@ const AssignmentManager = {
 
 const app = createApp({
     setup() {
-        const page = ref('dashboard');
+        const menuItems = [
+            { key: 'dashboard', label: 'Dashboard', path: '/admin', icon: 'bi bi-speedometer2' },
+            { key: 'teachers', label: 'จัดการอาจารย์', path: '/admin/teachers', icon: 'bi bi-person-badge' },
+            { key: 'subjects', label: 'จัดการรายวิชา', path: '/admin/subjects', icon: 'bi bi-book' },
+            { key: 'assignments', label: 'ผู้รับผิดชอบวิชา', path: '/admin/assignments', icon: 'bi bi-link-45deg' },
+            { key: 'students', label: 'รายชื่อนักเรียน', path: '/admin/students', icon: 'bi bi-people' },
+        ];
+        const page = ref(resolvePageFromPath(window.location.pathname));
         const user = ref(null);
         const token = ref(localStorage.getItem('token') || '');
 
-        onMounted(() => {
+        const currentMenu = computed(() => menuItems.find((item) => item.key === page.value) || menuItems[0]);
+
+        onMounted(async () => {
             const u = localStorage.getItem('user');
             if (u) user.value = JSON.parse(u);
             if (!token.value || user.value?.role !== 'admin') {
                 window.location.href = '/login';
+                return;
             }
+
+            window.addEventListener('popstate', () => {
+                page.value = resolvePageFromPath(window.location.pathname);
+            });
         });
 
-        function logout() {
-            fetch('/api/auth/logout', { method: 'POST', headers: { Authorization: `Bearer ${token.value}`, Accept: 'application/json' } });
+        function resolvePageFromPath(pathname) {
+            const segment = pathname.replace(/^\/admin\/?/, '').split('/')[0];
+            return menuItems.some((item) => item.key === segment) ? segment : 'dashboard';
+        }
+
+        function navigate(nextPage) {
+            const target = menuItems.find((item) => item.key === nextPage) || menuItems[0];
+            page.value = target.key;
+            if (window.location.pathname !== target.path) {
+                window.history.pushState({}, '', target.path);
+            }
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token.value}`, Accept: 'application/json' },
+            }).catch(() => {});
             localStorage.clear();
             window.location.href = '/login';
         }
 
-        return { page, user, token: token.value, logout };
+        return { currentMenu, menuItems, navigate, page, user, token: token.value, logout };
     }
 });
 

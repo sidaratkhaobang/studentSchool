@@ -1,6 +1,6 @@
 {
-  "__plugin-vue_export-helper-POW73Ysb.js": {
-    "file": "assets/_plugin-vue_export-helper-POW73Ysb.js",
+  "__plugin-vue_export-helper-I3ldm912.js": {
+    "file": "assets/_plugin-vue_export-helper-I3ldm912.js",
     "name": "_plugin-vue_export-helper"
   },
   "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
@@ -17,21 +17,21 @@
     "isEntry": true
   },
   "resources/js/admin/app.js": {
-    "file": "assets/app-DMKWtC3S.js",
+    "file": "assets/app-CAP4RtXR.js",
     "name": "app",
     "src": "resources/js/admin/app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-POW73Ysb.js"
+      "__plugin-vue_export-helper-I3ldm912.js"
     ]
   },
   "resources/js/student/app.js": {
-    "file": "assets/app-Da1HVUY9.js",
+    "file": "assets/app-iZDSvn7X.js",
     "name": "app",
     "src": "resources/js/student/app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-POW73Ysb.js"
+      "__plugin-vue_export-helper-I3ldm912.js"
     ]
   }
 }

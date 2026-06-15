@@ -3,10 +3,10 @@
 @section('title', 'Admin - StudentSchool')
 
 @section('content')
-<div id="admin-app">
+<div id="admin-app" v-cloak>
     <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark sticky-top px-3">
-        <a class="navbar-brand" href="#">
+    <nav class="navbar navbar-dark bg-dark sticky-top px-3 admin-topbar">
+        <a class="navbar-brand" href="/admin" @click.prevent="navigate('dashboard')">
             <i class="bi bi-mortarboard-fill me-2"></i>StudentSchool <span class="badge bg-danger ms-1 small">Admin</span>
         </a>
         <div class="d-flex align-items-center gap-2">
@@ -17,41 +17,132 @@
         </div>
     </nav>
 
-    <div class="d-flex">
+    <div class="admin-layout">
         <!-- Sidebar -->
-        <div class="sidebar" style="width: 240px; min-width: 240px;">
-            <nav class="nav flex-column pt-3">
-                <a class="nav-link" :class="{active: page==='dashboard'}" @click="page='dashboard'" href="#">
-                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                </a>
-                <a class="nav-link" :class="{active: page==='teachers'}" @click="page='teachers'" href="#">
-                    <i class="bi bi-person-badge me-2"></i>จัดการอาจารย์
-                </a>
-                <a class="nav-link" :class="{active: page==='subjects'}" @click="page='subjects'" href="#">
-                    <i class="bi bi-book me-2"></i>จัดการรายวิชา
-                </a>
-                <a class="nav-link" :class="{active: page==='assignments'}" @click="page='assignments'" href="#">
-                    <i class="bi bi-link-45deg me-2"></i>ผู้รับผิดชอบวิชา
-                </a>
-                <a class="nav-link" :class="{active: page==='students'}" @click="page='students'" href="#">
-                    <i class="bi bi-people me-2"></i>รายชื่อนักเรียน
+        <aside class="sidebar admin-sidebar">
+            <div class="sidebar-section-label">Admin Menu</div>
+            <nav class="nav flex-column">
+                <a v-for="item in menuItems" :key="item.key"
+                   class="nav-link" :class="{active: page === item.key}"
+                   :href="item.path" @click.prevent="navigate(item.key)">
+                    <i :class="item.icon"></i>
+                    <span>@{{ item.label }}</span>
                 </a>
             </nav>
-        </div>
+        </aside>
 
         <!-- Main Content -->
-        <div class="flex-grow-1 p-4">
+        <main class="admin-content">
+            <div class="page-titlebar">
+                <div>
+                    <p class="text-muted mb-1 small">Admin / @{{ currentMenu.label }}</p>
+                    <h1>@{{ currentMenu.label }}</h1>
+                </div>
+                <a class="btn btn-outline-secondary btn-sm" href="/login">
+                    <i class="bi bi-box-arrow-in-left me-1"></i>หน้า Login
+                </a>
+            </div>
+
             <admin-dashboard v-if="page==='dashboard'" :token="token"></admin-dashboard>
             <teacher-manager v-if="page==='teachers'" :token="token"></teacher-manager>
             <subject-manager v-if="page==='subjects'" :token="token"></subject-manager>
             <assignment-manager v-if="page==='assignments'" :token="token"></assignment-manager>
             <student-list v-if="page==='students'" :token="token"></student-list>
-        </div>
+        </main>
     </div>
 </div>
 @endsection
 
+@push('styles')
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+    .admin-layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        min-height: calc(100vh - 56px);
+    }
+
+    .admin-sidebar {
+        width: 260px;
+        min-width: 260px;
+        padding: 1rem 0.75rem;
+        position: sticky;
+        top: 56px;
+        align-self: start;
+        height: calc(100vh - 56px);
+        overflow-y: auto;
+    }
+
+    .sidebar-section-label {
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.75rem 0.75rem 0.5rem;
+    }
+
+    .admin-sidebar .nav-link {
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .admin-sidebar .nav-link i {
+        width: 1.25rem;
+        text-align: center;
+        margin: 0;
+    }
+
+    .admin-content {
+        min-width: 0;
+        padding: 1.5rem;
+    }
+
+    .page-titlebar {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .page-titlebar h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin: 0;
+        color: #111827;
+    }
+
+    @media (max-width: 900px) {
+        .admin-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+            position: static;
+            width: 100%;
+            min-width: 0;
+            min-height: auto !important;
+            height: auto;
+        }
+
+        .admin-sidebar .nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.25rem;
+        }
+    }
+</style>
+@endpush
+
 @push('scripts')
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="{{ asset('js/admin/app.js') }}"></script>
+@vite(['resources/css/app.css', 'resources/js/admin/app.js'])
 @endpush
