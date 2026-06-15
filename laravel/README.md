@@ -100,6 +100,18 @@ php artisan serve
 
 ---
 
+## ตำแหน่งโปรเจค
+
+Laravel application นี้อยู่ใน subfolder `laravel/` ของ repository:
+
+```bash
+cd studentSchool/laravel
+```
+
+ไฟล์ README หลักของ repository อยู่ที่ `../README.md`
+
+---
+
 ## โครงสร้างโปรเจกต์
 
 ```
@@ -114,16 +126,21 @@ laravel/
 │   │   └── Requests/          (Auth, Admin, Student)
 │   ├── Models/                (User, Teacher, Subject, Student, SubjectTeacher, WeeklyEnrollment, EnrollmentCourse)
 │   └── Services/              (EnrollmentService)
+├── config/                    (Laravel config รวมถึง Sanctum)
 ├── database/
-│   ├── migrations/            (7 migration files)
+│   ├── migrations/            (users, teachers, subjects, students, enrollments, sessions, Sanctum tokens)
 │   ├── seeders/               (Admin, Teachers, Subjects)
 │   └── factories/             (สำหรับ testing)
 ├── resources/
 │   ├── views/                 (Blade templates: auth, admin, student)
 │   └── js/                    (Vue.js components)
+├── public/
+│   ├── index.php
+│   └── build/                 (Vite production build)
 ├── routes/
 │   ├── api.php
 │   └── web.php
+├── storage/                   (runtime files; logs และ compiled views ไม่ควร commit)
 ├── tests/
 │   ├── Feature/               (Auth, Admin, Student)
 │   └── Unit/                  (EnrollmentService)
@@ -203,6 +220,18 @@ php artisan test
 # หรือ
 ./vendor/bin/phpunit
 ```
+
+---
+
+## Git / Runtime Files
+
+ไฟล์ dependency และ runtime ต่อไปนี้ไม่ควรถูก commit:
+
+- `vendor/`
+- `node_modules/`
+- `.env`
+- `storage/logs/*`
+- `storage/framework/views/*`
 
 ---
 
