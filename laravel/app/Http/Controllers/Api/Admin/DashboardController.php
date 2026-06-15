@@ -32,10 +32,10 @@ class DashboardController extends Controller
                 'active' => Subject::active()->count(),
             ],
             'enrollments' => [
-                'this_week' => WeeklyEnrollment::where('week_start', $currentWeekStart)->count(),
-                'submitted' => WeeklyEnrollment::where('week_start', $currentWeekStart)
+                'this_week' => WeeklyEnrollment::whereDate('week_start', $currentWeekStart)->count(),
+                'submitted' => WeeklyEnrollment::whereDate('week_start', $currentWeekStart)
                     ->where('status', 'submitted')->count(),
-                'approved'  => WeeklyEnrollment::where('week_start', $currentWeekStart)
+                'approved'  => WeeklyEnrollment::whereDate('week_start', $currentWeekStart)
                     ->where('status', 'approved')->count(),
             ],
         ];
@@ -46,7 +46,7 @@ class DashboardController extends Controller
             $weekEnd   = Carbon::now()->subWeeks($i)->endOfWeek(Carbon::FRIDAY)->toDateString();
             $weeklyTrend[] = [
                 'week'  => "สัปดาห์ที่ {$weekStart}",
-                'count' => WeeklyEnrollment::where('week_start', $weekStart)->count(),
+                'count' => WeeklyEnrollment::whereDate('week_start', $weekStart)->count(),
             ];
         }
 

@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $weekEnd   = Carbon::now()->endOfWeek(Carbon::FRIDAY)->toDateString();
 
         $enrollment = WeeklyEnrollment::where('student_id', $student->id)
-            ->where('week_start', $weekStart)
+            ->whereDate('week_start', $weekStart)
             ->with(['courses.subject.teachers'])
             ->first();
 

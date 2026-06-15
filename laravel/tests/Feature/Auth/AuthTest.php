@@ -129,6 +129,23 @@ class AuthTest extends TestCase
         $response->assertStatus(401);
     }
 
+    public function test_login_is_rate_limited_after_five_failed_attempts(): void
+    {
+        User::factory()->create(['username' => 'limited01', 'password' => 'CorrectPass1!']);
+
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            $this->postJson('/api/auth/login', [
+                'username' => 'limited01',
+                'password' => 'WrongPass1!',
+            ])->assertUnauthorized();
+        }
+
+        $this->postJson('/api/auth/login', [
+            'username' => 'limited01',
+            'password' => 'WrongPass1!',
+        ])->assertTooManyRequests();
+    }
+
     // TC-AUTH-007
     public function test_login_fails_for_inactive_account(): void
     {

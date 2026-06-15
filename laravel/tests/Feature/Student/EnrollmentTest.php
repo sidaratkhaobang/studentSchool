@@ -4,6 +4,7 @@ namespace Tests\Feature\Student;
 
 use App\Models\Student;
 use App\Models\Subject;
+use App\Models\SubjectTeacher;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Models\WeeklyEnrollment;
@@ -66,6 +67,12 @@ class EnrollmentTest extends TestCase
     // TC-STUDENT-E003
     public function test_student_can_add_course_to_schedule(): void
     {
+        SubjectTeacher::create([
+            'subject_id' => $this->subject->id,
+            'teacher_id' => Teacher::factory()->create()->id,
+            'is_primary' => true,
+        ]);
+
         $enrollment = WeeklyEnrollment::factory()->create([
             'student_id' => $this->student->id,
             'week_start' => '2026-04-21',
@@ -91,6 +98,12 @@ class EnrollmentTest extends TestCase
     // TC-STUDENT-E004
     public function test_adding_course_that_exceeds_daily_6_hours_is_rejected(): void
     {
+        SubjectTeacher::create([
+            'subject_id' => $this->subject->id,
+            'teacher_id' => Teacher::factory()->create()->id,
+            'is_primary' => true,
+        ]);
+
         $enrollment = WeeklyEnrollment::factory()->create([
             'student_id' => $this->student->id,
             'week_start' => '2026-04-21',
@@ -105,6 +118,11 @@ class EnrollmentTest extends TestCase
 
         // Try to add 2 more (total 7 > 6)
         $subject2 = Subject::factory()->create(['is_active' => true]);
+        SubjectTeacher::create([
+            'subject_id' => $subject2->id,
+            'teacher_id' => Teacher::factory()->create()->id,
+            'is_primary' => true,
+        ]);
         $response = $this->withToken($this->token)->postJson("/api/student/enrollments/{$enrollment->id}/courses", [
             'subject_id' => $subject2->id, 'day_of_week' => 'monday', 'hours' => 2,
         ]);
@@ -116,6 +134,12 @@ class EnrollmentTest extends TestCase
     // TC-STUDENT-E005
     public function test_adding_course_to_reach_exactly_6_hours_is_allowed(): void
     {
+        SubjectTeacher::create([
+            'subject_id' => $this->subject->id,
+            'teacher_id' => Teacher::factory()->create()->id,
+            'is_primary' => true,
+        ]);
+
         $enrollment = WeeklyEnrollment::factory()->create([
             'student_id' => $this->student->id, 'week_start' => '2026-04-21',
             'week_end' => '2026-04-25', 'status' => 'draft',
@@ -126,6 +150,11 @@ class EnrollmentTest extends TestCase
         ]);
 
         $subject2 = Subject::factory()->create(['is_active' => true]);
+        SubjectTeacher::create([
+            'subject_id' => $subject2->id,
+            'teacher_id' => Teacher::factory()->create()->id,
+            'is_primary' => true,
+        ]);
         $response = $this->withToken($this->token)->postJson("/api/student/enrollments/{$enrollment->id}/courses", [
             'subject_id' => $subject2->id, 'day_of_week' => 'monday', 'hours' => 1,
         ]);
@@ -152,6 +181,12 @@ class EnrollmentTest extends TestCase
     // TC-STUDENT-E008
     public function test_cannot_modify_submitted_schedule(): void
     {
+        SubjectTeacher::create([
+            'subject_id' => $this->subject->id,
+            'teacher_id' => Teacher::factory()->create()->id,
+            'is_primary' => true,
+        ]);
+
         $enrollment = WeeklyEnrollment::factory()->create([
             'student_id' => $this->student->id, 'week_start' => '2026-04-21',
             'week_end' => '2026-04-25', 'status' => 'submitted',
@@ -167,6 +202,12 @@ class EnrollmentTest extends TestCase
     // TC-STUDENT-E009
     public function test_student_can_submit_schedule(): void
     {
+        SubjectTeacher::create([
+            'subject_id' => $this->subject->id,
+            'teacher_id' => Teacher::factory()->create()->id,
+            'is_primary' => true,
+        ]);
+
         $enrollment = WeeklyEnrollment::factory()->create([
             'student_id' => $this->student->id, 'week_start' => '2026-04-21',
             'week_end' => '2026-04-25', 'status' => 'draft',
@@ -179,6 +220,25 @@ class EnrollmentTest extends TestCase
         $response = $this->withToken($this->token)->putJson("/api/student/enrollments/{$enrollment->id}/submit");
 
         $response->assertStatus(200)->assertJsonPath('enrollment.status', 'submitted');
+    }
+
+    public function test_cannot_add_subject_without_assigned_teacher(): void
+    {
+        $enrollment = WeeklyEnrollment::factory()->create([
+            'student_id' => $this->student->id,
+            'week_start' => '2026-04-21',
+            'week_end' => '2026-04-25',
+            'status' => 'draft',
+        ]);
+
+        $response = $this->withToken($this->token)->postJson("/api/student/enrollments/{$enrollment->id}/courses", [
+            'subject_id' => $this->subject->id,
+            'day_of_week' => 'monday',
+            'hours' => 1,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonPath('message', 'รายวิชานี้ยังไม่มีอาจารย์รับผิดชอบ');
     }
 
     // TC-STUDENT-E010

@@ -105,6 +105,10 @@ class EnrollmentController extends Controller
             return response()->json(['message' => 'รายวิชานี้ไม่เปิดให้ลงทะเบียน'], 422);
         }
 
+        if (! $subject->subjectTeachers()->exists()) {
+            return response()->json(['message' => 'รายวิชานี้ยังไม่มีอาจารย์รับผิดชอบ'], 422);
+        }
+
         $result = $this->enrollmentService->addCourse(
             $enrollment,
             $request->subject_id,
