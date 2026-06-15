@@ -37,11 +37,18 @@ class EnrollmentController extends Controller
 
         $request->validate(['week_start' => 'required|date|date_format:Y-m-d']);
 
-        $weekStart = Carbon::parse($request->week_start)->startOfWeek(Carbon::MONDAY)->toDateString();
+        $requestedDate = Carbon::parse($request->week_start)->toDateString();
+        $weekStart = Carbon::parse($requestedDate)->startOfWeek(Carbon::MONDAY)->toDateString();
         $weekEnd   = Carbon::parse($weekStart)->endOfWeek(Carbon::FRIDAY)->toDateString();
 
         $exists = WeeklyEnrollment::where('student_id', $student->id)
-            ->where('week_start', $weekStart)
+            ->where(function ($query) use ($requestedDate, $weekStart) {
+                $query->whereDate('week_start', $weekStart)
+                    ->orWhere(function ($query) use ($requestedDate) {
+                        $query->whereDate('week_start', '<=', $requestedDate)
+                            ->whereDate('week_end', '>=', $requestedDate);
+                    });
+            })
             ->exists();
 
         if ($exists) {

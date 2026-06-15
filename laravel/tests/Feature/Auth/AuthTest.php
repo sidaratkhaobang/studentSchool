@@ -146,12 +146,23 @@ class AuthTest extends TestCase
     // TC-AUTH-008
     public function test_user_can_logout(): void
     {
-        $user = User::factory()->create();
-        $token = $user->createToken('test')->plainTextToken;
+        $user = User::factory()->create([
+            'username' => 'logoutuser',
+            'password' => 'Password1!',
+            'is_active' => true,
+        ]);
+
+        $token = $this->postJson('/api/auth/login', [
+            'username' => 'logoutuser',
+            'password' => 'Password1!',
+        ])->json('token');
 
         $response = $this->withToken($token)->postJson('/api/auth/logout');
         $response->assertStatus(200);
 
-        $this->withToken($token)->getJson('/api/auth/me')->assertStatus(401);
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'tokenable_type' => User::class,
+            'tokenable_id' => $user->id,
+        ]);
     }
 }

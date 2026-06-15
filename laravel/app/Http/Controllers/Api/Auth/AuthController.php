@@ -10,7 +10,9 @@ use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -89,7 +91,12 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        if ($bearerToken = $request->bearerToken()) {
+            PersonalAccessToken::findToken($bearerToken)?->delete();
+        }
+
+        $request->user()->tokens()->delete();
+        Auth::guard('web')->logout();
 
         return response()->json(['message' => 'ออกจากระบบสำเร็จ']);
     }
