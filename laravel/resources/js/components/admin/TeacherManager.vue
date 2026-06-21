@@ -18,7 +18,7 @@
             </div>
           </div>
           <div class="col-md-3">
-            <select class="form-select" v-model="filterActive" @change="fetchTeachers">
+            <select class="form-select select2-control" v-select2="{ placeholder: '-- สถานะทั้งหมด --', allowClear: true }" v-model="filterActive" @change="fetchTeachers">
               <option value="">-- สถานะทั้งหมด --</option>
               <option value="1">Active</option>
               <option value="0">Inactive</option>
@@ -160,6 +160,8 @@
 </template>
 
 <script>
+import { confirmDialog, errorDialog, successToast } from '../../utils/dialogs';
+
 export default {
   name: 'TeacherManager',
   props: ['token'],
@@ -206,10 +208,22 @@ export default {
       this.saving = false;
     },
     async deleteTeacher(t) {
-      if (!confirm(`ยืนยันลบอาจารย์ ${t.first_name_th} ${t.last_name_th}?`)) return;
+      const confirmed = await confirmDialog({
+        title: 'ลบอาจารย์',
+        text: `${t.first_name_th} ${t.last_name_th}`,
+        icon: 'warning',
+        confirmButtonText: 'ลบ',
+        confirmButtonColor: '#dc3545',
+      });
+      if (!confirmed) return;
       const r = await fetch(`/api/admin/teachers/${t.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${this.token}`, Accept: 'application/json' } });
       const data = await r.json();
-      if (!r.ok) { alert(data.message); } else { this.fetchTeachers(); }
+      if (!r.ok) {
+        await errorDialog(data.message || 'ลบอาจารย์ไม่สำเร็จ');
+      } else {
+        successToast(data.message || 'ลบอาจารย์แล้ว');
+        this.fetchTeachers();
+      }
     }
   }
 };

@@ -2,6 +2,8 @@ import { createApp, computed, ref, onMounted } from 'vue';
 import AdminDashboardComponent from '../components/admin/AdminDashboard.vue';
 import TeacherManagerComponent from '../components/admin/TeacherManager.vue';
 import StudentListComponent from '../components/admin/StudentList.vue';
+import { confirmDialog, errorDialog, successToast } from '../utils/dialogs';
+import { installSelect2 } from '../utils/select2';
 
 // Inline SubjectManager and AssignmentManager for brevity
 const SubjectManager = {
@@ -75,13 +77,22 @@ const SubjectManager = {
         async save() {
             const url = this.editId ? `/api/admin/subjects/${this.editId}` : '/api/admin/subjects';
             const r = await fetch(url, { method: this.editId ? 'PUT' : 'POST', headers: { Authorization: `Bearer ${this.token}`, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(this.form) });
-            if (r.ok) { this.modal.hide(); this.fetchSubjects(); }
+            const data = await r.json();
+            if (r.ok) { this.modal.hide(); successToast(data.message || 'บันทึกรายวิชาแล้ว'); this.fetchSubjects(); }
+            else { await errorDialog(data.message || 'บันทึกรายวิชาไม่สำเร็จ'); }
         },
         async deleteSubject(s) {
-            if (!confirm(`ลบวิชา ${s.name_th}?`)) return;
+            const confirmed = await confirmDialog({
+                title: 'ลบรายวิชา',
+                text: s.name_th,
+                icon: 'warning',
+                confirmButtonText: 'ลบ',
+                confirmButtonColor: '#dc3545',
+            });
+            if (!confirmed) return;
             const r = await fetch(`/api/admin/subjects/${s.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${this.token}`, Accept: 'application/json' } });
             const data = await r.json();
-            if (!r.ok) { alert(data.message); } else { this.fetchSubjects(); }
+            if (!r.ok) { await errorDialog(data.message || 'ลบรายวิชาไม่สำเร็จ'); } else { successToast(data.message || 'ลบรายวิชาแล้ว'); this.fetchSubjects(); }
         }
     }
 };
@@ -95,13 +106,13 @@ const AssignmentManager = {
                 <h6 class="fw-bold mb-3">เพิ่มการผูกรายวิชา</h6>
                 <div class="row g-3 align-items-end">
                     <div class="col-md-4"><label class="form-label">รายวิชา *</label>
-                        <select class="form-select" v-model="form.subject_id">
+                        <select class="form-select select2-control" v-select2="{ placeholder: '-- เลือกรายวิชา --', allowClear: true }" v-model="form.subject_id">
                             <option value="">-- เลือกรายวิชา --</option>
                             <option v-for="s in subjects" :key="s.id" :value="s.id">[{{ s.subject_code }}] {{ s.name_th }}</option>
                         </select>
                     </div>
                     <div class="col-md-4"><label class="form-label">อาจารย์ *</label>
-                        <select class="form-select" v-model="form.teacher_id">
+                        <select class="form-select select2-control" v-select2="{ placeholder: '-- เลือกอาจารย์ --', allowClear: true }" v-model="form.teacher_id">
                             <option value="">-- เลือกอาจารย์ --</option>
                             <option v-for="t in teachers" :key="t.id" :value="t.id">{{ t.first_name_th }} {{ t.last_name_th }}</option>
                         </select>
@@ -146,12 +157,22 @@ const AssignmentManager = {
             const r = await fetch('/api/admin/subject-teachers', { method: 'POST', headers: { Authorization: `Bearer ${this.token}`, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(this.form) });
             const data = await r.json();
             this.message = { type: r.ok ? 'success' : 'error', text: data.message };
-            if (r.ok) { this.form = { subject_id:'', teacher_id:'', is_primary:false }; this.fetchAll(); }
+            if (r.ok) { successToast(data.message || 'ผูกรายวิชาแล้ว'); this.form = { subject_id:'', teacher_id:'', is_primary:false }; this.fetchAll(); }
+            else { await errorDialog(data.message || 'ผูกรายวิชาไม่สำเร็จ'); }
         },
         async remove(a) {
-            if (!confirm('ยืนยันยกเลิกการผูก?')) return;
-            await fetch(`/api/admin/subject-teachers/${a.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${this.token}`, Accept: 'application/json' } });
-            this.fetchAll();
+            const confirmed = await confirmDialog({
+                title: 'ยกเลิกการผูกรายวิชา',
+                text: `${a.subject?.name_th || 'รายวิชา'} / ${a.teacher?.first_name_th || 'อาจารย์'}`,
+                icon: 'warning',
+                confirmButtonText: 'ยกเลิกการผูก',
+                confirmButtonColor: '#dc3545',
+            });
+            if (!confirmed) return;
+            const r = await fetch(`/api/admin/subject-teachers/${a.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${this.token}`, Accept: 'application/json' } });
+            const data = await r.json();
+            if (r.ok) { successToast(data.message || 'ยกเลิกการผูกแล้ว'); this.fetchAll(); }
+            else { await errorDialog(data.message || 'ยกเลิกการผูกไม่สำเร็จ'); }
         }
     }
 };
@@ -215,5 +236,6 @@ app.component('teacher-manager', TeacherManagerComponent);
 app.component('subject-manager', SubjectManager);
 app.component('assignment-manager', AssignmentManager);
 app.component('student-list', StudentListComponent);
+installSelect2(app);
 
 app.mount('#admin-app');
