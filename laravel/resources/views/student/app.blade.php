@@ -51,6 +51,5 @@
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="{{ asset('js/student/app.js') }}"></script>
+@vite(['resources/css/app.css', 'resources/js/student/app.js'])
 @endpush

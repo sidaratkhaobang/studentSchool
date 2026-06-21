@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::prefix('auth')->group(function () {
+    Route::get('/teachers', [AuthController::class, 'teachers']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,15');
 });

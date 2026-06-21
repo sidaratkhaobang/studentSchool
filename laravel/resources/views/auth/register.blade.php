@@ -72,7 +72,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">อาจารย์ที่ปรึกษา</label>
-                                    <select class="form-select" v-model="form.advisor_teacher_id">
+                                    <select class="form-select select2-control" id="register-advisor-select" v-model="form.advisor_teacher_id">
                                         <option value="">-- เลือกอาจารย์ที่ปรึกษา --</option>
                                         <option v-for="t in teachers" :key="t.id" :value="t.id">
                                             @{{ t.first_name_th }} @{{ t.last_name_th }}
@@ -133,49 +133,5 @@
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script>
-const { createApp, ref, onMounted } = Vue;
-createApp({
-    setup() {
-        const form = ref({ first_name_th:'',last_name_th:'',first_name_en:'',last_name_en:'',
-            date_of_birth:'',age:'',grade_level:'',advisor_teacher_id:'',phone:'',
-            email:'',username:'',password:'',password_confirmation:'' });
-        const teachers = ref([]);
-        const errors = ref({});
-        const loading = ref(false);
-        const success = ref(false);
-
-        onMounted(async () => {
-            try {
-                const res = await fetch('/api/student/subjects');
-                // Load teachers for advisor selection - use a public endpoint
-                const r = await fetch('/api/auth/teachers');
-                if (r.ok) teachers.value = (await r.json()).data || [];
-            } catch {}
-        });
-
-        async function register() {
-            loading.value = true;
-            errors.value = {};
-            try {
-                const res = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json',
-                               'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-                    body: JSON.stringify(form.value)
-                });
-                const data = await res.json();
-                if (!res.ok) { errors.value = data.errors || { general: data.message }; return; }
-                success.value = true;
-            } catch (e) {
-                errors.value = { general: 'เกิดข้อผิดพลาด กรุณาลองใหม่' };
-            } finally {
-                loading.value = false;
-            }
-        }
-        return { form, teachers, errors, loading, success, register };
-    }
-}).mount('#register-app');
-</script>
+@vite(['resources/css/app.css', 'resources/js/auth/register.js'])
 @endpush

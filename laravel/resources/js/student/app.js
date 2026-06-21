@@ -1,6 +1,7 @@
 import { createApp, ref, onMounted } from 'vue';
 import WeeklyScheduleComponent from '../components/student/WeeklySchedule.vue';
 import EnrollmentFormComponent from '../components/student/EnrollmentForm.vue';
+import { installSelect2 } from '../utils/select2';
 
 const StudentProfile = {
     template: `
@@ -18,7 +19,7 @@ const StudentProfile = {
                     <div class="col-md-4"><label class="form-label">อายุ</label><input type="number" class="form-control" v-model.number="form.age"></div>
                     <div class="col-md-4"><label class="form-label">ชั้นที่ศึกษา</label><input type="text" class="form-control" v-model="form.grade_level"></div>
                     <div class="col-md-6"><label class="form-label">อาจารย์ที่ปรึกษา</label>
-                        <select class="form-select" v-model="form.advisor_teacher_id">
+                        <select class="form-select select2-control" v-select2="{ placeholder: '-- เลือกอาจารย์ --', allowClear: true }" v-model="form.advisor_teacher_id">
                             <option value="">-- เลือกอาจารย์ --</option>
                             <option v-for="t in teachers" :key="t.id" :value="t.id">{{ t.first_name_th }} {{ t.last_name_th }}</option>
                         </select>
@@ -54,7 +55,7 @@ const StudentProfile = {
             this.form = { ...data.student, current_password: '', new_password: '', new_password_confirmation: '' };
         },
         async fetchTeachers() {
-            const r = await fetch('/api/admin/teachers?per_page=100', { headers: { Authorization: `Bearer ${this.token}`, Accept: 'application/json' } });
+            const r = await fetch('/api/auth/teachers', { headers: { Accept: 'application/json' } });
             if (r.ok) this.teachers = (await r.json()).data || [];
         },
         async save() {
@@ -97,5 +98,6 @@ const app = createApp({
 app.component('student-dashboard', WeeklyScheduleComponent);
 app.component('enrollment-form', EnrollmentFormComponent);
 app.component('student-profile', StudentProfile);
+installSelect2(app);
 
 app.mount('#student-app');
