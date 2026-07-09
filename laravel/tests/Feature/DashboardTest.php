@@ -51,7 +51,17 @@ class DashboardTest extends TestCase
     public function test_student_dashboard_returns_current_week_schedule_and_recent_enrollments(): void
     {
         $user = User::factory()->create(['role' => 'student']);
-        $student = Student::factory()->create(['user_id' => $user->id, 'status' => 'approved']);
+        $advisor = Teacher::factory()->create([
+            'first_name_th' => 'สมศักดิ์',
+            'last_name_th' => 'วิชาการ',
+            'is_active' => true,
+        ]);
+        $student = Student::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'approved',
+            'grade_level' => 'ม.4/1',
+            'advisor_teacher_id' => $advisor->id,
+        ]);
         $token = $user->createToken('test')->plainTextToken;
         $subject = Subject::factory()->create(['is_active' => true]);
 
@@ -72,6 +82,8 @@ class DashboardTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('student.id', $student->id)
+            ->assertJsonPath('student.grade_level', 'ม.4/1')
+            ->assertJsonPath('student.advisor.id', $advisor->id)
             ->assertJsonPath('current_enrollment.id', $enrollment->id)
             ->assertJsonPath('schedule.monday.total_hours', 2)
             ->assertJsonPath('total_hours_week', 2)

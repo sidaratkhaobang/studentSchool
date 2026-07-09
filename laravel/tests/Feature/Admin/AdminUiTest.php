@@ -10,15 +10,18 @@ class AdminUiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_login_page_renders_admin_login_form(): void
+    public function test_login_page_renders_login_form_for_admin_and_student(): void
     {
         $this->get('/login')
             ->assertOk()
-            ->assertSee('Admin Login')
+            ->assertSee('เข้าสู่ระบบ')
+            ->assertSee('Admin')
+            ->assertSee('Student')
             ->assertSee('name="username"', false)
             ->assertSee('value="admin"', false)
             ->assertSee('name="password"', false)
-            ->assertSee('Admin1234!');
+            ->assertSee('Admin1234!')
+            ->assertSee('Student1234!');
     }
 
     public function test_seeded_admin_credentials_can_login_through_api(): void

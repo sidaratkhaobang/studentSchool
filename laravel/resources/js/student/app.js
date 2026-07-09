@@ -1,6 +1,7 @@
-import { createApp, ref, onMounted } from 'vue';
+import { computed, createApp, ref, onMounted } from 'vue';
 import WeeklyScheduleComponent from '../components/student/WeeklySchedule.vue';
 import EnrollmentFormComponent from '../components/student/EnrollmentForm.vue';
+import { errorDialog, successToast } from '../utils/dialogs';
 import { installSelect2 } from '../utils/select2';
 
 const StudentProfile = {
@@ -9,7 +10,26 @@ const StudentProfile = {
         <h4 class="fw-bold mb-4"><i class="bi bi-person-circle me-2 text-primary"></i>โปรไฟล์ของฉัน</h4>
         <div class="card" v-if="profile">
             <div class="card-body">
-                <div v-if="success" class="alert alert-success">อัปเดตข้อมูลสำเร็จ</div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">Username</div>
+                            <div class="fw-bold">{{ profile.user?.username || '-' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">สถานะ</div>
+                            <span :class="statusBadge(profile.status)">{{ statusLabel(profile.status) }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">อาจารย์ที่ปรึกษาปัจจุบัน</div>
+                            <div class="fw-bold">{{ advisorName(profile.advisor) }}</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row g-3">
                     <div class="col-md-6"><label class="form-label">ชื่อ (ไทย)</label><input type="text" class="form-control" v-model="form.first_name_th"></div>
                     <div class="col-md-6"><label class="form-label">นามสกุล (ไทย)</label><input type="text" class="form-control" v-model="form.last_name_th"></div>
@@ -45,7 +65,7 @@ const StudentProfile = {
         </div>
     </div>`,
     props: ['token'],
-    data() { return { profile: null, teachers: [], form: {}, saving: false, success: false }; },
+    data() { return { profile: null, teachers: [], form: {}, saving: false }; },
     mounted() { this.fetchProfile(); this.fetchTeachers(); },
     methods: {
         async fetchProfile() {
@@ -59,21 +79,41 @@ const StudentProfile = {
             if (r.ok) this.teachers = (await r.json()).data || [];
         },
         async save() {
-            this.saving = true; this.success = false;
+            this.saving = true;
             const r = await fetch('/api/student/profile', { method: 'PUT', headers: { Authorization: `Bearer ${this.token}`, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(this.form) });
-            if (r.ok) { this.success = true; this.fetchProfile(); }
+            const data = await r.json();
+            if (r.ok) {
+                successToast(data.message || 'อัปเดตข้อมูลสำเร็จ');
+                this.fetchProfile();
+            } else {
+                await errorDialog(data.message || 'อัปเดตข้อมูลไม่สำเร็จ');
+            }
             this.saving = false;
-        }
+        },
+        advisorName(advisor) {
+            if (!advisor) return '-';
+            return `${advisor.first_name_th || ''} ${advisor.last_name_th || ''}`.trim() || '-';
+        },
+        statusBadge(status) {
+            return { pending: 'badge bg-warning text-dark', approved: 'badge bg-success', rejected: 'badge bg-danger' }[status] || 'badge bg-secondary';
+        },
+        statusLabel(status) {
+            return { pending: 'รออนุมัติ', approved: 'อนุมัติแล้ว', rejected: 'ไม่อนุมัติ' }[status] || status || '-';
+        },
     }
 };
 
 const app = createApp({
     setup() {
-        const page = ref('dashboard');
+        const page = ref(pageFromPath());
         const user = ref(null);
         const student = ref(null);
         const studentStatus = ref('');
         const token = ref(localStorage.getItem('token') || '');
+        const studentName = computed(() => {
+            if (!student.value) return '';
+            return `${student.value.first_name_th || ''} ${student.value.last_name_th || ''}`.trim();
+        });
 
         onMounted(async () => {
             const u = localStorage.getItem('user');
@@ -83,7 +123,43 @@ const app = createApp({
                 return;
             }
             studentStatus.value = user.value?.student_status || '';
+            await fetchMe();
         });
+
+        function pageFromPath() {
+            const segment = window.location.pathname.split('/').filter(Boolean)[1];
+            return ['dashboard', 'enrollment', 'profile'].includes(segment) ? segment : 'dashboard';
+        }
+
+        function navigate(nextPage) {
+            page.value = nextPage;
+            const path = nextPage === 'dashboard' ? '/student/dashboard' : `/student/${nextPage}`;
+            window.history.pushState({}, '', path);
+        }
+
+        async function fetchMe() {
+            const response = await fetch('/api/auth/me', {
+                headers: { Authorization: `Bearer ${token.value}`, Accept: 'application/json' },
+            });
+
+            if (!response.ok) {
+                localStorage.clear();
+                window.location.href = '/login';
+                return;
+            }
+
+            const data = await response.json();
+            user.value = data.user;
+            student.value = data.user?.student || null;
+            studentStatus.value = student.value?.status || user.value?.student_status || '';
+            localStorage.setItem('user', JSON.stringify({
+                id: data.user.id,
+                username: data.user.username,
+                email: data.user.email,
+                role: data.user.role,
+                student_status: studentStatus.value,
+            }));
+        }
 
         function logout() {
             fetch('/api/auth/logout', { method: 'POST', headers: { Authorization: `Bearer ${token.value}`, Accept: 'application/json' } });
@@ -91,7 +167,11 @@ const app = createApp({
             window.location.href = '/login';
         }
 
-        return { page, user, student, studentStatus, token: token.value, logout };
+        window.addEventListener('popstate', () => {
+            page.value = pageFromPath();
+        });
+
+        return { page, user, student, studentName, studentStatus, token: token.value, navigate, logout };
     }
 });
 
