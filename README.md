@@ -40,23 +40,21 @@ studentSchool/
 | Database | MySQL 8.0+ |
 | Testing | PHPUnit 11 |
 
-## Module หลัก
+## Scope ปัจจุบัน
 
-### Admin
+งานหลักที่ทำแล้ว:
 
-- Dashboard สรุปข้อมูล
-- Teacher CRUD
-- Subject CRUD
-- Subject-Teacher assignment
-- Student management และการเปลี่ยนสถานะนักเรียน
+- Login รองรับทั้ง Admin และ Student โดย redirect ตาม `users.role`
+- Admin dashboard และเมนูจัดการ teachers, subjects, subject-teacher assignments, students
+- Admin สามารถดูรายละเอียดนักเรียนผ่าน modal และ approve/reject นักเรียน
+- Student dashboard สำหรับดูตารางเรียนรายสัปดาห์ รายวิชา ชั่วโมงรวม ห้องเรียน/ชั้นเรียน และอาจารย์ที่ปรึกษา
+- Student profile สำหรับดู/แก้ไขข้อมูลส่วนตัวและเปลี่ยนรหัสผ่าน
+- Student enrollment สำหรับสร้างตารางรายสัปดาห์ เพิ่ม/ลบรายวิชา และ submit ตารางเรียน
+- Select2 ใช้กับ select controls สำคัญทั้งระบบ
+- SweetAlert2 ใช้แทน native alert/confirm ทั้งระบบ
+- Seed data สำหรับ admin, teachers, students/users และ subjects
 
-### Student
-
-- Dashboard ตารางเรียน
-- Profile management
-- Enrollment รายสัปดาห์
-- เพิ่ม/ลบวิชาในตารางเรียน
-- Submit ตารางเรียน
+รายละเอียด scope และ phase ถัดไปอยู่ที่ [Project Scope](laravel/docs/ProjectScope.md)
 
 ## Database หลัก
 
@@ -129,6 +127,7 @@ npm run dev
 | Role | Email / Username | Password |
 |------|------------------|----------|
 | Admin | admin | Admin1234! |
+| Student | student01 - student05 | Student1234! |
 
 ## API Routes
 
@@ -181,6 +180,7 @@ php artisan test
 
 - [Laravel app README](laravel/README.md)
 - [SRS](laravel/docs/SRS.md)
+- [Project Scope](laravel/docs/ProjectScope.md)
 - [ER Diagram](laravel/docs/ER_Diagram.md)
 - [Data Dictionary](laravel/docs/Data_Dictionary.md)
 - [Test Cases](laravel/docs/TestCases.md)

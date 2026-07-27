@@ -153,11 +153,27 @@ laravel/
 
 ---
 
+## Scope ปัจจุบัน
+
+- Login รองรับทั้ง Admin และ Student โดย redirect ตาม role
+- Admin จัดการ dashboard, teachers, subjects, subject-teacher assignments และ students
+- Admin ดูรายละเอียดนักเรียนผ่าน modal และเปลี่ยนสถานะนักเรียนได้
+- Student ดู dashboard ตารางเรียนรายสัปดาห์ รายวิชา ชั่วโมงรวม ห้องเรียน/ชั้นเรียน และอาจารย์ที่ปรึกษา
+- Student จัดการข้อมูลส่วนตัวและเปลี่ยนรหัสผ่านได้
+- Student ลงทะเบียนรายวิชาแบบรายสัปดาห์ เพิ่ม/ลบวิชา และ submit ตารางเรียนได้
+- ใช้ Select2 สำหรับ select controls และ SweetAlert2 สำหรับ modal alert/confirm
+- มี seed data สำหรับ admin, teachers, students/users และ subjects
+
+รายละเอียด scope ปัจจุบันและ phase ถัดไปอยู่ที่ [docs/ProjectScope.md](docs/ProjectScope.md)
+
+---
+
 ## Default Credentials (after seeding)
 
 | Role | Email / Username | Password |
 |------|-----------------|----------|
 | Admin | admin | Admin1234! |
+| Student | student01 - student05 | Student1234! |
 
 ---
 
@@ -240,6 +256,7 @@ php artisan test
 | เอกสาร | ไฟล์ |
 |--------|------|
 | Software Requirements Specification | [docs/SRS.md](docs/SRS.md) |
+| Project Scope and Next Phases | [docs/ProjectScope.md](docs/ProjectScope.md) |
 | ER Diagram | [docs/ER_Diagram.md](docs/ER_Diagram.md) |
 | Data Dictionary | [docs/Data_Dictionary.md](docs/Data_Dictionary.md) |
 | Test Cases | [docs/TestCases.md](docs/TestCases.md) |
