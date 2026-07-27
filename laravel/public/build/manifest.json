@@ -1,7 +1,18 @@
 {
-  "__plugin-vue_export-helper-I3ldm912.js": {
-    "file": "assets/_plugin-vue_export-helper-I3ldm912.js",
+  "__plugin-vue_export-helper-DlAUqK2U.js": {
+    "file": "assets/_plugin-vue_export-helper-DlAUqK2U.js",
     "name": "_plugin-vue_export-helper"
+  },
+  "_dialogs-!~{005}~.js": {
+    "file": "assets/dialogs-CZ7hVag_.css",
+    "src": "_dialogs-!~{005}~.js"
+  },
+  "_dialogs-CCPYncb8.js": {
+    "file": "assets/dialogs-CCPYncb8.js",
+    "name": "dialogs",
+    "css": [
+      "assets/dialogs-CZ7hVag_.css"
+    ]
   },
   "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
     "file": "assets/bootstrap-icons-BeopsB42.woff",
@@ -12,26 +23,40 @@
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BkuU6i2h.css",
+    "file": "assets/app-DOvC9On3.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/admin/app.js": {
-    "file": "assets/app-CAP4RtXR.js",
+    "file": "assets/app-Ba-5yDzo.js",
     "name": "app",
     "src": "resources/js/admin/app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-I3ldm912.js"
+      "_dialogs-CCPYncb8.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/app-BNUOA_Dc.css"
+    ]
+  },
+  "resources/js/auth/register.js": {
+    "file": "assets/register-BwtuKNXd.js",
+    "name": "register",
+    "src": "resources/js/auth/register.js",
+    "isEntry": true,
+    "imports": [
+      "_dialogs-CCPYncb8.js"
     ]
   },
   "resources/js/student/app.js": {
-    "file": "assets/app-iZDSvn7X.js",
+    "file": "assets/app-CnJJB1Ma.js",
     "name": "app",
     "src": "resources/js/student/app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-I3ldm912.js"
+      "_dialogs-CCPYncb8.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
     ]
   }
 }

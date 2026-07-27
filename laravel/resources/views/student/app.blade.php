@@ -10,7 +10,7 @@
             <i class="bi bi-mortarboard-fill me-2"></i>StudentSchool
         </a>
         <div class="d-flex align-items-center gap-2">
-            <span class="text-white-50 small">@{{ student?.full_name_th || user?.username }}</span>
+            <span class="text-white-50 small">@{{ studentName || user?.username }}</span>
             <button class="btn btn-outline-light btn-sm" @click="logout">
                 <i class="bi bi-box-arrow-right me-1"></i>ออกจากระบบ
             </button>
@@ -21,13 +21,13 @@
         <!-- Sidebar -->
         <div class="sidebar" style="width: 220px; min-width: 220px;">
             <nav class="nav flex-column pt-3">
-                <a class="nav-link" :class="{active: page==='dashboard'}" @click="page='dashboard'" href="#">
+                <a class="nav-link" :class="{active: page==='dashboard'}" @click.prevent="navigate('dashboard')" href="/student/dashboard">
                     <i class="bi bi-calendar-week me-2"></i>ตารางเรียนของฉัน
                 </a>
-                <a class="nav-link" :class="{active: page==='enrollment'}" @click="page='enrollment'" href="#">
+                <a class="nav-link" :class="{active: page==='enrollment'}" @click.prevent="navigate('enrollment')" href="/student/enrollment">
                     <i class="bi bi-journal-plus me-2"></i>ลงทะเบียนเรียน
                 </a>
-                <a class="nav-link" :class="{active: page==='profile'}" @click="page='profile'" href="#">
+                <a class="nav-link" :class="{active: page==='profile'}" @click.prevent="navigate('profile')" href="/student/profile">
                     <i class="bi bi-person-circle me-2"></i>โปรไฟล์ของฉัน
                 </a>
             </nav>
@@ -51,6 +51,5 @@
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="{{ asset('js/student/app.js') }}"></script>
+@vite(['resources/css/app.css', 'resources/js/student/app.js'])
 @endpush

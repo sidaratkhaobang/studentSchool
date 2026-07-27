@@ -54,7 +54,7 @@
           <div class="row g-3 align-items-end">
             <div class="col-md-4">
               <label class="form-label">เลือกวัน <span class="text-danger">*</span></label>
-              <select class="form-select" v-model="addForm.day_of_week">
+              <select class="form-select select2-control" v-select2="{ placeholder: '-- เลือกวัน --', allowClear: true }" v-model="addForm.day_of_week">
                 <option value="">-- เลือกวัน --</option>
                 <option v-for="d in days" :key="d.key" :value="d.key"
                         :disabled="getDailyHours(d.key) >= 6">
@@ -64,7 +64,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label">เลือกรายวิชา <span class="text-danger">*</span></label>
-              <select class="form-select" v-model="addForm.subject_id">
+              <select class="form-select select2-control" v-select2="{ placeholder: '-- เลือกรายวิชา --', allowClear: true }" v-model="addForm.subject_id">
                 <option value="">-- เลือกรายวิชา --</option>
                 <option v-for="s in subjects" :key="s.id" :value="s.id">
                   [{{ s.subject_code }}] {{ s.name_th }}
@@ -117,6 +117,8 @@
 </template>
 
 <script>
+import { confirmDialog, errorDialog, warningDialog, successToast } from '../../utils/dialogs';
+
 export default {
   name: 'EnrollmentForm',
   props: ['token'],
@@ -172,8 +174,8 @@ export default {
         body: JSON.stringify({ week_start: weekStart })
       });
       const data = await r.json();
-      if (r.ok) { this.currentEnrollment = data.enrollment; this.courses = []; }
-      else { alert(data.message); }
+      if (r.ok) { this.currentEnrollment = data.enrollment; this.courses = []; successToast(data.message || 'สร้างตารางเรียนแล้ว'); }
+      else { await errorDialog(data.message || 'สร้างตารางเรียนไม่สำเร็จ'); }
       this.creating = false;
     },
     async addCourse() {
@@ -190,21 +192,29 @@ export default {
       this.adding = false;
     },
     async removeCourse(c) {
-      if (!confirm('ยืนยันลบรายวิชานี้?')) return;
+      const confirmed = await confirmDialog({
+        title: 'ลบรายวิชา',
+        text: c.subject?.name_th || 'ยืนยันลบรายวิชานี้?',
+        icon: 'warning',
+        confirmButtonText: 'ลบ',
+        confirmButtonColor: '#dc3545',
+      });
+      if (!confirmed) return;
       await fetch(`/api/student/enrollments/${this.currentEnrollment.id}/courses/${c.id}`, {
         method: 'DELETE', headers: { Authorization: `Bearer ${this.token}`, Accept: 'application/json' }
       });
+      successToast('ลบรายวิชาแล้ว');
       this.fetchEnrollmentDetail(this.currentEnrollment.id);
     },
     async submitSchedule() {
-      if (this.courses.length === 0) { alert('กรุณาเพิ่มรายวิชาก่อนส่งตาราง'); return; }
+      if (this.courses.length === 0) { await warningDialog('กรุณาเพิ่มรายวิชาก่อนส่งตาราง'); return; }
       this.submitting = true;
       const r = await fetch(`/api/student/enrollments/${this.currentEnrollment.id}/submit`, {
         method: 'PUT', headers: { Authorization: `Bearer ${this.token}`, Accept: 'application/json' }
       });
       const data = await r.json();
-      if (r.ok) { this.currentEnrollment = data.enrollment; }
-      else { alert(data.message); }
+      if (r.ok) { this.currentEnrollment = data.enrollment; successToast(data.message || 'ส่งตารางเรียนแล้ว'); }
+      else { await errorDialog(data.message || 'ส่งตารางเรียนไม่สำเร็จ'); }
       this.submitting = false;
     },
     getDayCourses(day) { return this.courses.filter(c => c.day_of_week === day); },

@@ -55,6 +55,24 @@ class AuthController extends Controller
         ], 201);
     }
 
+    public function teachers(): JsonResponse
+    {
+        $teachers = Teacher::active()
+            ->orderBy('first_name_th')
+            ->orderBy('last_name_th')
+            ->get([
+                'id',
+                'first_name_th',
+                'last_name_th',
+                'first_name_en',
+                'last_name_en',
+            ]);
+
+        return response()->json([
+            'data' => $teachers,
+        ]);
+    }
+
     public function login(LoginRequest $request): JsonResponse
     {
         $user = User::where('username', $request->username)->first();

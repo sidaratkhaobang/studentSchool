@@ -160,6 +160,22 @@ class AuthTest extends TestCase
         $response->assertStatus(403);
     }
 
+    public function test_public_teacher_options_return_only_active_teachers(): void
+    {
+        $activeTeacher = Teacher::factory()->create([
+            'first_name_th' => 'กมล',
+            'last_name_th' => 'ใจดี',
+            'is_active' => true,
+        ]);
+        $inactiveTeacher = Teacher::factory()->create(['is_active' => false]);
+
+        $response = $this->getJson('/api/auth/teachers');
+
+        $response->assertOk()
+            ->assertJsonPath('data.0.id', $activeTeacher->id)
+            ->assertJsonMissing(['id' => $inactiveTeacher->id]);
+    }
+
     // TC-AUTH-008
     public function test_user_can_logout(): void
     {

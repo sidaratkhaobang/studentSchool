@@ -75,6 +75,14 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(79,195,247,0.25);
 }
 
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: 38px;
+}
+
+.select2-container--open {
+    z-index: 1060;
+}
+
 .smaller {
     font-size: 0.75rem;
 }

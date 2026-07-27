@@ -10,15 +10,15 @@
                 <i class="bi bi-mortarboard-fill"></i>
             </div>
             <h1>StudentSchool</h1>
-            <p>ระบบจัดการลงทะเบียนเรียนรายสัปดาห์สำหรับผู้ดูแลระบบ</p>
+            <p>ระบบจัดการลงทะเบียนเรียนรายสัปดาห์สำหรับผู้ดูแลระบบและนักเรียน</p>
             <div class="login-summary">
                 <div>
                     <span class="summary-value">Admin</span>
-                    <span class="summary-label">ระบบจัดการ</span>
+                    <span class="summary-label">จัดการข้อมูลระบบ</span>
                 </div>
                 <div>
-                    <span class="summary-value">API</span>
-                    <span class="summary-label">Sanctum token</span>
+                    <span class="summary-value">Student</span>
+                    <span class="summary-label">ลงทะเบียนรายวิชา</span>
                 </div>
             </div>
         </section>
@@ -27,7 +27,7 @@
             <div class="login-card-header">
                 <div>
                     <p class="eyebrow">เข้าสู่ระบบ</p>
-                    <h2>Admin Login</h2>
+                    <h2>Login</h2>
                 </div>
                 <i class="bi bi-shield-lock"></i>
             </div>
@@ -57,9 +57,15 @@
                     </div>
                 </div>
 
-                <div class="admin-hint">
-                    <span><i class="bi bi-person-check"></i> username: <strong>admin</strong></span>
-                    <span><i class="bi bi-key"></i> password: <strong>Admin1234!</strong></span>
+                <div class="login-hint">
+                    <button type="button" class="credential-option active" data-username="admin" data-password="Admin1234!">
+                        <span><i class="bi bi-person-gear"></i> Admin</span>
+                        <small>admin / Admin1234!</small>
+                    </button>
+                    <button type="button" class="credential-option" data-username="student01" data-password="Student1234!">
+                        <span><i class="bi bi-person-vcard"></i> Student</span>
+                        <small>student01 / Student1234!</small>
+                    </button>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" id="login-button">
@@ -189,16 +195,39 @@
         text-transform: uppercase;
     }
 
-    .admin-hint {
+    .login-hint {
+        display: grid;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .credential-option {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
-        padding: 0.85rem;
-        display: grid;
-        gap: 0.4rem;
+        padding: 0.75rem 0.85rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
         color: #475569;
         font-size: 0.9rem;
-        margin-bottom: 1rem;
+        text-align: left;
+        width: 100%;
+    }
+
+    .credential-option span {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .credential-option small {
+        color: #64748b;
+    }
+
+    .credential-option.active {
+        border-color: #2563eb;
+        background: #eff6ff;
     }
 
     @media (max-width: 860px) {
@@ -227,6 +256,7 @@ const buttonText = document.getElementById('login-button-text');
 const spinner = document.getElementById('login-spinner');
 const passwordInput = document.getElementById('password');
 const togglePassword = document.getElementById('toggle-password');
+const credentialOptions = document.querySelectorAll('.credential-option');
 
 function setLoading(isLoading) {
     button.disabled = isLoading;
@@ -243,6 +273,15 @@ togglePassword.addEventListener('click', () => {
     const showPassword = passwordInput.type === 'password';
     passwordInput.type = showPassword ? 'text' : 'password';
     togglePassword.querySelector('i').className = showPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+});
+
+credentialOptions.forEach((option) => {
+    option.addEventListener('click', () => {
+        credentialOptions.forEach((item) => item.classList.remove('active'));
+        option.classList.add('active');
+        form.username.value = option.dataset.username;
+        form.password.value = option.dataset.password;
+    });
 });
 
 form.addEventListener('submit', async (event) => {
@@ -272,14 +311,20 @@ form.addEventListener('submit', async (event) => {
             return;
         }
 
-        if (data.user?.role !== 'admin') {
-            showError('บัญชีนี้ไม่ใช่ผู้ดูแลระบบ');
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        if (data.user?.role === 'admin') {
+            window.location.href = '/admin';
             return;
         }
 
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        window.location.href = '/admin';
+        if (data.user?.role === 'student') {
+            window.location.href = '/student';
+            return;
+        }
+
+        showError('บัญชีนี้ยังไม่มีสิทธิ์เข้าใช้งานระบบ');
     } catch (error) {
         showError('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
     } finally {
