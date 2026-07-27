@@ -2,7 +2,7 @@
 
 **Updated**: 2026-07-27  
 **Branch**: `dev`  
-**Current Status**: Development phase, core Admin/Student flows implemented
+**Current Status**: Development phase, core Admin/Student/Teacher flows implemented
 
 ---
 
@@ -35,11 +35,15 @@
 ความสัมพันธ์หลัก:
 
 - `users.role` แยกสิทธิ์ `admin` และ `student`
+- `users.role` รองรับ `admin`, `teacher`, `student`
+- `teachers.user_id` ผูกบัญชี login ของอาจารย์กับ profile อาจารย์
 - `users` 1 คนที่เป็น student มีข้อมูลใน `students`
 - `students.advisor_teacher_id` ผูกกับอาจารย์ที่ปรึกษา
 - `subjects` ผูกกับ `teachers` ผ่าน `subject_teachers`
 - `weekly_enrollments` เป็นตารางเรียนรายสัปดาห์ของนักเรียน
 - `enrollment_courses` เป็นรายวิชาที่ถูกเพิ่มในตารางรายสัปดาห์
+- `weekly_enrollments.approved_by_teacher_id` ระบุอาจารย์ที่อนุมัติ/ไม่อนุมัติตารางเรียน
+- `subjects.learning_content` และ `subjects.material_path` ใช้เก็บเนื้อหาและเอกสารประกอบรายวิชา
 
 ### 1.3 Seed Data
 
@@ -47,14 +51,17 @@
 
 - Admin user
 - Teachers จำนวน 5 รายการ
+- Teacher users จำนวน 5 รายการ
 - Students/users จำนวน 5 รายการ
 - Subjects จำนวน 10 รายการ
+- Subject-teacher assignments สำหรับรายวิชาเริ่มต้น
 
 บัญชีทดสอบหลัง seed:
 
 | Role | Username | Password |
 |------|----------|----------|
 | Admin | `admin` | `Admin1234!` |
+| Teacher | `teacher01` - `teacher05` | `Teacher1234!` |
 | Student | `student01` - `student05` | `Student1234!` |
 
 ### 1.4 Authentication
@@ -62,13 +69,32 @@
 - Login ด้วย `username/password`
 - Login API คืนค่า Sanctum token, token type และข้อมูล role
 - `role=admin` เข้า `/admin`
+- `role=teacher` เข้า `/teacher`
 - `role=student` เข้า `/student`
 - Logout ลบ token
 - Rate limit login 5 ครั้งใน 15 นาที
 - Student register แล้วได้สถานะ `pending`
 - Admin ต้อง approve ก่อน student จึงลงทะเบียนเรียนได้
 
-### 1.5 Admin Module
+### 1.5 Approval Scope
+
+เมื่อ student ลงทะเบียนเรียนและกดส่งตารางเรียน สถานะของ `weekly_enrollments` จะเปลี่ยนเป็น `submitted`
+
+ผู้อนุมัติตารางเรียนคือ:
+
+- อาจารย์ที่ปรึกษา/อาจารย์ประจำชั้นของนักเรียนคนนั้น
+- อ้างอิงจาก `students.advisor_teacher_id`
+- Teacher เห็นและอนุมัติได้เฉพาะตารางของนักเรียนที่ตนเองดูแล
+- Admin ยังดูข้อมูลนักเรียนและสถานะได้ แต่ business owner ของ approval คือ Teacher
+
+สถานะตารางเรียน:
+
+- `draft`: student กำลังจัดตาราง
+- `submitted`: student ส่งให้ teacher ตรวจ
+- `approved`: teacher อนุมัติแล้ว
+- `rejected`: teacher ไม่อนุมัติพร้อมเหตุผล เพื่อให้ student แก้ไขและส่งใหม่
+
+### 1.6 Admin Module
 
 Admin มี UI และ API สำหรับ:
 
@@ -87,7 +113,7 @@ UI ฝั่ง Admin เพิ่มแล้ว:
 - SweetAlert2 ใช้แทน native alert/confirm
 - Select2 ใช้กับ select options สำคัญทั้งระบบ
 
-### 1.6 Student Module
+### 1.7 Student Module
 
 Student มี UI และ API สำหรับ:
 
@@ -123,11 +149,43 @@ Course enrollment รองรับ:
 - เพิ่มรายวิชาเข้าแต่ละวัน
 - ลบรายวิชาจากตาราง
 - ส่งตารางเรียน
+- แก้ไขและส่งใหม่ได้เมื่อ teacher ปฏิเสธตารางเรียน
 - จำกัดชั่วโมงเรียนไม่เกิน 6 ชั่วโมงต่อวัน
 - จำกัด 1 ตารางต่อ 1 นักเรียนต่อ 1 สัปดาห์
 - ลงทะเบียนได้เฉพาะวิชา active และมีอาจารย์รับผิดชอบ
 
-### 1.7 UI/UX Libraries
+### 1.8 Teacher Module
+
+Teacher มี UI และ API สำหรับ:
+
+- Teacher login ผ่านหน้า `/login`
+- Teacher dashboard ที่ `/teacher/dashboard`
+- เมนูอนุมัติตารางเรียนที่ `/teacher/enrollments`
+- เมนูจัดการรายวิชาที่รับผิดชอบที่ `/teacher/subjects`
+
+Teacher dashboard แสดง:
+
+- วิชาที่รับผิดชอบ
+- ห้อง/ชั้นที่เป็นอาจารย์ประจำชั้น
+- จำนวนนักเรียนในความดูแล
+- รายชื่อนักเรียนที่อยู่ในห้องที่ดูแล
+- จำนวนตารางเรียนที่รออนุมัติ
+
+Teacher approval รองรับ:
+
+- ดูตารางเรียนที่ student submit เฉพาะนักเรียนที่ตนเป็นที่ปรึกษา
+- อนุมัติตารางเรียน
+- ไม่อนุมัติตารางเรียนพร้อมเหตุผล
+- ป้องกัน teacher อนุมัติตารางของนักเรียนที่ไม่ได้อยู่ในความดูแล
+
+Teacher subject management รองรับ:
+
+- ดูรายวิชาที่รับผิดชอบ
+- อัปเดตเนื้อหาการเรียนการสอนของรายวิชา
+- แนบเอกสารประกอบการเรียน
+- Student สามารถเห็นและดาวน์โหลดเอกสารจากตารางเรียนได้
+
+### 1.9 UI/UX Libraries
 
 - Bootstrap 5
 - Bootstrap Icons
@@ -135,7 +193,7 @@ Course enrollment รองรับ:
 - Select2 สำหรับ select controls
 - SweetAlert2 สำหรับ confirm, warning, error และ success toast
 
-### 1.8 Testing
+### 1.10 Testing
 
 มี test ครอบคลุม business flow หลัก:
 
@@ -151,12 +209,16 @@ Course enrollment รองรับ:
 - Enrollment service business rules
 - Admin UI route rendering
 - Student UI route rendering
+- Teacher login/dashboard
+- Teacher enrollment approval/rejection
+- Teacher subject content/material management
+- Teacher UI route rendering
 
 ผลทดสอบล่าสุด:
 
 ```text
 php artisan test
-61 tests, 211 assertions
+67 tests, 251 assertions
 ```
 
 หมายเหตุ: มี PHP deprecation warning จาก `PDO::MYSQL_ATTR_SSL_CA` ใน Laravel database config เมื่อใช้ PHP รุ่นใหม่ แต่ test ยังผ่านทั้งหมด
@@ -167,9 +229,7 @@ php artisan test
 
 - ยังไม่มี entity แยกสำหรับ `classrooms` หรือ `rooms`; ตอนนี้ข้อมูลห้องเรียนใช้ `students.grade_level`
 - ตารางเรียนยังเก็บเวลาเป็น optional (`start_time`, `end_time`) แต่ UI เพิ่มวิชายังไม่ได้บังคับกรอกเวลา
-- ยังไม่มีระบบ Admin approve/reject ตารางเรียนรายสัปดาห์ที่ student submit
 - ยังไม่มีหน้ารายงาน/export
-- ยังไม่มี Teacher portal
 - ยังไม่มีระบบแจ้งเตือน
 - ยังไม่มี CI/CD pipeline
 - ยังไม่ได้ deploy production ไป Oracle Cloud Infrastructure
@@ -181,10 +241,19 @@ php artisan test
 
 ### Phase 1: Complete Student Enrollment Workflow
 
-- เพิ่ม flow ให้ Admin ตรวจและ approve/reject weekly enrollment
+**Status**: Implemented core workflow
+
+- เพิ่ม teacher login และ teacher portal
+- เพิ่ม flow ให้ teacher advisor ตรวจและ approve/reject weekly enrollment
 - เพิ่มสถานะ rejected พร้อมเหตุผลการไม่อนุมัติ
-- เพิ่มหน้าประวัติตารางเรียนของ student แบบดูรายละเอียดย้อนหลัง
+- เพิ่ม teacher dashboard สำหรับวิชาที่รับผิดชอบ ห้องที่ประจำชั้น และนักเรียนที่ดูแล
+- เพิ่มเมนูจัดการเนื้อหา/เอกสารของรายวิชาที่รับผิดชอบ
+
+งานย่อยที่ยังเหลือใน Phase 1:
+
+- เพิ่มหน้าประวัติตารางเรียนของ student แบบดูรายละเอียดทุกสัปดาห์
 - เพิ่ม validation เรื่องเวลาเรียนซ้ำซ้อน ถ้าเริ่มใช้ `start_time/end_time` จริง
+- เพิ่ม notification หลัง teacher approve/reject
 
 ### Phase 2: Classroom และ Schedule Detail
 
@@ -228,4 +297,3 @@ php artisan test
 - เพิ่ม audit log สำหรับ admin action
 - เพิ่ม browser-based UI tests สำหรับ login/dashboard/enrollment
 - ตรวจ accessibility และ responsive layout เพิ่มเติม
-

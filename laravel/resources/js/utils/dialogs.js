@@ -43,6 +43,34 @@ export async function warningDialog(message, title = 'แจ้งเตือ�
     });
 }
 
+export async function textareaDialog({
+    title = 'กรอกข้อมูล',
+    inputLabel = '',
+    inputPlaceholder = '',
+    confirmButtonText = 'ยืนยัน',
+    cancelButtonText = 'ยกเลิก',
+} = {}) {
+    const result = await Swal.fire({
+        title,
+        input: 'textarea',
+        inputLabel,
+        inputPlaceholder,
+        inputAttributes: {
+            'aria-label': inputLabel || title,
+        },
+        showCancelButton: true,
+        confirmButtonText,
+        cancelButtonText,
+        reverseButtons: true,
+        inputValidator: (value) => {
+            if (!value) return 'กรุณากรอกข้อมูล';
+            return null;
+        },
+    });
+
+    return result.isConfirmed ? result.value : null;
+}
+
 export function successToast(message, title = 'สำเร็จ') {
     Swal.fire({
         toast: true,

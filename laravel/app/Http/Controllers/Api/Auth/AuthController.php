@@ -89,8 +89,13 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $studentStatus = null;
+        $teacher = null;
         if ($user->isStudent() && $user->student) {
             $studentStatus = $user->student->status;
+        }
+
+        if ($user->isTeacher() && $user->teacher) {
+            $teacher = $user->teacher;
         }
 
         return response()->json([
@@ -103,6 +108,7 @@ class AuthController extends Controller
                 'email'          => $user->email,
                 'role'           => $user->role,
                 'student_status' => $studentStatus,
+                'teacher'        => $teacher,
             ],
         ]);
     }
@@ -121,7 +127,7 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load('student.advisor');
+        $user = $request->user()->load('student.advisor', 'teacher');
 
         return response()->json([
             'user' => $user,

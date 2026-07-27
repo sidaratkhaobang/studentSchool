@@ -34,7 +34,7 @@
           <span :class="statusBadge(currentEnrollment.status)" class="fs-6 px-3 py-2">
             {{ statusLabel(currentEnrollment.status) }}
           </span>
-          <button v-if="currentEnrollment.status === 'draft'" class="btn btn-success"
+          <button v-if="canModifyCurrentEnrollment" class="btn btn-success"
                   @click="submitSchedule" :disabled="submitting">
             <i class="bi bi-send me-1"></i>{{ submitting ? 'กำลังส่ง...' : 'ส่งตาราง' }}
           </button>
@@ -45,7 +45,11 @@
       </div>
 
       <!-- Add Course Form -->
-      <div class="card mb-3" v-if="currentEnrollment.status === 'draft'">
+      <div v-if="currentEnrollment.status === 'rejected' && currentEnrollment.rejection_reason" class="alert alert-danger">
+        <strong>ตารางเรียนไม่ผ่านการอนุมัติ:</strong> {{ currentEnrollment.rejection_reason }}
+      </div>
+
+      <div class="card mb-3" v-if="canModifyCurrentEnrollment">
         <div class="card-header fw-semibold bg-light">
           <i class="bi bi-plus-circle me-2 text-success"></i>เพิ่มรายวิชา
         </div>
@@ -102,8 +106,11 @@
                 <div>
                   <div class="small fw-semibold">{{ c.subject?.name_th }}</div>
                   <div class="smaller text-muted">{{ c.hours }} ชม.</div>
+                  <a v-if="c.subject?.material_path" class="smaller d-inline-block" :href="'/storage/' + c.subject.material_path" target="_blank">
+                    <i class="bi bi-download me-1"></i>เอกสาร
+                  </a>
                 </div>
-                <button v-if="currentEnrollment.status === 'draft'"
+                <button v-if="canModifyCurrentEnrollment"
                         class="btn btn-link btn-sm text-danger p-0" @click="removeCourse(c)">
                   <i class="bi bi-x-circle"></i>
                 </button>
@@ -141,7 +148,10 @@ export default {
     };
   },
   computed: {
-    totalHours() { return this.courses.reduce((s, c) => s + parseFloat(c.hours), 0); }
+    totalHours() { return this.courses.reduce((s, c) => s + parseFloat(c.hours), 0); },
+    canModifyCurrentEnrollment() {
+      return ['draft', 'rejected'].includes(this.currentEnrollment?.status);
+    }
   },
   mounted() { this.fetchSubjects(); this.fetchCurrentEnrollment(); },
   methods: {
@@ -153,7 +163,7 @@ export default {
     async fetchCurrentEnrollment() {
       const r = await fetch('/api/student/enrollments?per_page=1', { headers: { Authorization: `Bearer ${this.token}`, Accept: 'application/json' } });
       const data = await r.json();
-      if (data.data?.[0]?.status === 'draft') {
+      if (['draft', 'rejected'].includes(data.data?.[0]?.status)) {
         this.currentEnrollment = data.data[0];
         this.fetchEnrollmentDetail(data.data[0].id);
       }
@@ -220,8 +230,8 @@ export default {
     getDayCourses(day) { return this.courses.filter(c => c.day_of_week === day); },
     getDailyHours(day) { return this.getDayCourses(day).reduce((s, c) => s + parseFloat(c.hours), 0); },
     formatDate(d) { return d ? new Date(d).toLocaleDateString('th-TH', { day:'numeric', month:'short' }) : '-'; },
-    statusBadge(s) { return { draft:'badge bg-secondary', submitted:'badge bg-info', approved:'badge bg-success' }[s]; },
-    statusLabel(s) { return { draft:'ร่าง', submitted:'รออนุมัติ', approved:'อนุมัติแล้ว' }[s] || s; },
+    statusBadge(s) { return { draft:'badge bg-secondary', submitted:'badge bg-info', approved:'badge bg-success', rejected:'badge bg-danger' }[s]; },
+    statusLabel(s) { return { draft:'ร่าง', submitted:'รออนุมัติ', approved:'อนุมัติแล้ว', rejected:'ไม่อนุมัติ' }[s] || s; },
     getMonday(year, week) {
       const jan4 = new Date(year, 0, 4);
       const dayOfWeek = jan4.getDay() || 7;

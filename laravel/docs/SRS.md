@@ -13,8 +13,9 @@
 เอกสารนี้อธิบาย Software Requirements Specification (SRS) ของระบบ StudentSchool ซึ่งเป็นระบบจัดการการลงทะเบียนเรียนรายวิชาแบบรายสัปดาห์ สำหรับสถานศึกษา
 
 ### 1.2 Scope
-ระบบ StudentSchool ประกอบด้วย 2 ระบบย่อย:
+ระบบ StudentSchool ประกอบด้วย 3 ระบบย่อย:
 - **Admin System**: สำหรับผู้ดูแลระบบจัดการอาจารย์ รายวิชา และนักเรียน
+- **Teacher System**: สำหรับอาจารย์ดู dashboard ห้องที่ดูแล อนุมัติตารางเรียน และจัดการเนื้อหารายวิชา
 - **Student System**: สำหรับนักเรียนลงทะเบียนวิชาเรียนรายสัปดาห์
 
 ### 1.3 Definitions & Abbreviations
@@ -54,12 +55,12 @@
 │                   API Gateway Layer                      │
 │              Laravel RESTful API (Sanctum)               │
 ├────────────────────┬────────────────────────────────────┤
-│   Admin Module     │        Student Module               │
-│  - Dashboard       │       - Dashboard                   │
-│  - Teacher CRUD    │       - Profile CRUD                │
-│  - Subject CRUD    │       - Enrollment CRUD             │
-│  - Assignment CRUD │       - Weekly Schedule             │
-│  - Student Mgmt    │                                     │
+│   Admin Module     │ Teacher Module │ Student Module     │
+│  - Dashboard       │ - Dashboard    │ - Dashboard        │
+│  - Teacher CRUD    │ - Approval     │ - Profile CRUD     │
+│  - Subject CRUD    │ - Subjects     │ - Enrollment CRUD  │
+│  - Assignment CRUD │ - Materials    │ - Weekly Schedule  │
+│  - Student Mgmt    │                │                    │
 ├────────────────────┴────────────────────────────────────┤
 │                   Service Layer                          │
 │         EnrollmentService, DashboardService             │
@@ -74,6 +75,7 @@
 | User Class | Description | Privileges |
 |------------|-------------|------------|
 | Admin | ผู้ดูแลระบบ | Full access to Admin panel |
+| Teacher | อาจารย์ | ดูนักเรียนในความดูแล อนุมัติตารางเรียน และจัดการเนื้อหารายวิชาที่รับผิดชอบ |
 | Student (Approved) | นักเรียนที่ได้รับการอนุมัติ | Access to student features |
 | Student (Pending) | นักเรียนรอการอนุมัติ | Read-only, cannot enroll |
 | Guest | ผู้เยี่ยมชม | Login/Register only |
@@ -97,14 +99,14 @@
   - วันเดือนปีเกิด: ไม่เกินวันปัจจุบัน
 
 #### FR-AUTH-002: User Login
-- **Actor**: Admin, Student
+- **Actor**: Admin, Teacher, Student
 - **Description**: ผู้ใช้ login ด้วย username/password
 - **Input**: username, password
 - **Output**: API Token (Sanctum), user profile, role
 - **Rules**: ล็อคบัญชีหลัง login ผิด 5 ครั้งใน 15 นาที
 
 #### FR-AUTH-003: User Logout
-- **Actor**: Admin, Student
+- **Actor**: Admin, Teacher, Student
 - **Description**: ผู้ใช้ logout ออกจากระบบ
 - **Output**: Token revoked, redirect to login
 
@@ -216,6 +218,43 @@
 | Remove Course | ลบวิชาออกจากวันที่เลือก |
 | Submit Schedule | ส่ง schedule เพื่อรออนุมัติ |
 | View History | ดู schedule สัปดาห์ที่ผ่านมา |
+
+---
+
+### 3.4 Teacher Module
+
+#### FR-TEACHER-001: Teacher Dashboard
+- **Actor**: Teacher
+- **Description**: แสดงภาพรวมงานของอาจารย์
+- **Display**:
+  - วิชาที่รับผิดชอบ
+  - ห้อง/ชั้นที่เป็นอาจารย์ประจำชั้น
+  - จำนวนนักเรียนที่ดูแล
+  - รายชื่อนักเรียนในความดูแล
+  - จำนวนตารางเรียนที่รออนุมัติ
+
+#### FR-TEACHER-002: Weekly Enrollment Approval
+- **Actor**: Teacher
+- **Description**: อาจารย์ที่ปรึกษา/อาจารย์ประจำชั้นอนุมัติตารางเรียนของนักเรียน
+- **Scope Rule**:
+  - ผู้อนุมัติคือ teacher ที่ตรงกับ `students.advisor_teacher_id`
+  - Teacher เห็นและอนุมัติได้เฉพาะนักเรียนในความดูแลของตนเอง
+  - ตารางที่อนุมัติได้ต้องอยู่ในสถานะ `submitted`
+
+| Operation | Description |
+|-----------|-------------|
+| Read | ดูตารางเรียนที่รออนุมัติ |
+| Approve | เปลี่ยนสถานะเป็น `approved` และบันทึกผู้อนุมัติ |
+| Reject | เปลี่ยนสถานะเป็น `rejected` พร้อมเหตุผล |
+
+#### FR-TEACHER-003: Subject Content Management
+- **Actor**: Teacher
+- **Description**: อาจารย์จัดการเนื้อหาและเอกสารประกอบรายวิชาที่รับผิดชอบ
+- **Operations**:
+  - ดูรายวิชาที่รับผิดชอบ
+  - อัปเดตเนื้อหาการเรียนการสอน
+  - แนบเอกสารประกอบการเรียน
+  - นักเรียนดาวน์โหลดเอกสารได้จากตารางเรียน
 
 ---
 

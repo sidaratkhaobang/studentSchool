@@ -3,6 +3,7 @@
 ระบบลงทะเบียนเรียนรายวิชาแบบรายสัปดาห์สำหรับสถานศึกษา แยกการใช้งานเป็น 2 ส่วนหลัก:
 
 - **Admin**: จัดการอาจารย์ รายวิชา การผูกอาจารย์กับรายวิชา และสถานะนักเรียน
+- **Teacher**: ดู dashboard ห้องที่ดูแล อนุมัติตารางเรียน และจัดการเนื้อหา/เอกสารรายวิชา
 - **Student**: จัดการโปรไฟล์ สร้างตารางลงทะเบียนรายสัปดาห์ และส่งตารางเรียน
 
 ## โครงสร้างล่าสุด
@@ -44,9 +45,12 @@ studentSchool/
 
 งานหลักที่ทำแล้ว:
 
-- Login รองรับทั้ง Admin และ Student โดย redirect ตาม `users.role`
+- Login รองรับ Admin, Teacher และ Student โดย redirect ตาม `users.role`
 - Admin dashboard และเมนูจัดการ teachers, subjects, subject-teacher assignments, students
 - Admin สามารถดูรายละเอียดนักเรียนผ่าน modal และ approve/reject นักเรียน
+- Teacher dashboard แสดงวิชาที่รับผิดชอบ ห้องที่ประจำชั้น จำนวนนักเรียน และรายชื่อนักเรียนในความดูแล
+- Teacher อนุมัติ/ไม่อนุมัติตารางเรียนของนักเรียนที่ตนเป็นที่ปรึกษาได้
+- Teacher จัดการเนื้อหาและแนบเอกสารประกอบรายวิชาที่รับผิดชอบได้
 - Student dashboard สำหรับดูตารางเรียนรายสัปดาห์ รายวิชา ชั่วโมงรวม ห้องเรียน/ชั้นเรียน และอาจารย์ที่ปรึกษา
 - Student profile สำหรับดู/แก้ไขข้อมูลส่วนตัวและเปลี่ยนรหัสผ่าน
 - Student enrollment สำหรับสร้างตารางรายสัปดาห์ เพิ่ม/ลบรายวิชา และ submit ตารางเรียน
@@ -127,6 +131,7 @@ npm run dev
 | Role | Email / Username | Password |
 |------|------------------|----------|
 | Admin | admin | Admin1234! |
+| Teacher | teacher01 - teacher05 | Teacher1234! |
 | Student | student01 - student05 | Student1234! |
 
 ## API Routes
@@ -162,12 +167,22 @@ Student:
 - `POST /api/student/enrollments/{enrollment}/courses`
 - `DELETE /api/student/enrollments/{enrollment}/courses/{courseId}`
 
+Teacher:
+
+- `GET /api/teacher/dashboard`
+- `GET /api/teacher/enrollments`
+- `GET /api/teacher/enrollments/{enrollment}`
+- `PUT /api/teacher/enrollments/{enrollment}/status`
+- `GET /api/teacher/subjects`
+- `POST /api/teacher/subjects/{subject}/content`
+
 ## Business Rules
 
 1. นักเรียนต้องได้รับการ approve จาก Admin ก่อนจึงจะลงทะเบียนได้
 2. นักเรียน 1 คนมี schedule ได้ 1 รายการต่อสัปดาห์
 3. แต่ละวันจันทร์ถึงศุกร์ลงเรียนได้ไม่เกิน 6 ชั่วโมง
 4. รายวิชามีอาจารย์รับผิดชอบได้หลายคน แต่มี primary teacher ได้ 1 คน
+5. เมื่อนักเรียน submit ตารางเรียน ผู้อนุมัติคืออาจารย์ที่ปรึกษา/อาจารย์ประจำชั้นตาม `students.advisor_teacher_id`
 
 ## Tests
 

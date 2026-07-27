@@ -142,7 +142,7 @@ laravel/
 │   └── web.php
 ├── storage/                   (runtime files; logs และ compiled views ไม่ควร commit)
 ├── tests/
-│   ├── Feature/               (Auth, Admin, Student)
+│   ├── Feature/               (Auth, Admin, Student, Teacher)
 │   └── Unit/                  (EnrollmentService)
 └── docs/
     ├── ER_Diagram.md
@@ -155,14 +155,17 @@ laravel/
 
 ## Scope ปัจจุบัน
 
-- Login รองรับทั้ง Admin และ Student โดย redirect ตาม role
+- Login รองรับ Admin, Teacher และ Student โดย redirect ตาม role
 - Admin จัดการ dashboard, teachers, subjects, subject-teacher assignments และ students
 - Admin ดูรายละเอียดนักเรียนผ่าน modal และเปลี่ยนสถานะนักเรียนได้
+- Teacher ดู dashboard วิชาที่รับผิดชอบ ห้องที่ประจำชั้น จำนวนนักเรียน และรายชื่อนักเรียนในความดูแล
+- Teacher อนุมัติ/ไม่อนุมัติตารางเรียนของนักเรียนที่ตนเป็นที่ปรึกษาได้
+- Teacher จัดการเนื้อหาและแนบเอกสารประกอบรายวิชาที่รับผิดชอบได้
 - Student ดู dashboard ตารางเรียนรายสัปดาห์ รายวิชา ชั่วโมงรวม ห้องเรียน/ชั้นเรียน และอาจารย์ที่ปรึกษา
 - Student จัดการข้อมูลส่วนตัวและเปลี่ยนรหัสผ่านได้
 - Student ลงทะเบียนรายวิชาแบบรายสัปดาห์ เพิ่ม/ลบวิชา และ submit ตารางเรียนได้
 - ใช้ Select2 สำหรับ select controls และ SweetAlert2 สำหรับ modal alert/confirm
-- มี seed data สำหรับ admin, teachers, students/users และ subjects
+- มี seed data สำหรับ admin, teachers/teacher users, students/users, subjects และ subject-teacher assignments
 
 รายละเอียด scope ปัจจุบันและ phase ถัดไปอยู่ที่ [docs/ProjectScope.md](docs/ProjectScope.md)
 
@@ -173,6 +176,7 @@ laravel/
 | Role | Email / Username | Password |
 |------|-----------------|----------|
 | Admin | admin | Admin1234! |
+| Teacher | teacher01 - teacher05 | Teacher1234! |
 | Student | student01 - student05 | Student1234! |
 
 ---
@@ -218,6 +222,17 @@ laravel/
 | POST | `/api/student/enrollments/{id}/courses` | เพิ่มวิชาในตาราง |
 | DELETE | `/api/student/enrollments/{id}/courses/{courseId}` | ลบวิชาออกจากตาราง |
 
+### Teacher Endpoints (Bearer token + role=teacher)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/teacher/dashboard` | dashboard อาจารย์ |
+| GET | `/api/teacher/enrollments` | ตารางเรียนที่รอ/เคยอนุมัติ |
+| GET | `/api/teacher/enrollments/{id}` | รายละเอียดตารางเรียน |
+| PUT | `/api/teacher/enrollments/{id}/status` | อนุมัติ/ไม่อนุมัติตารางเรียน |
+| GET | `/api/teacher/subjects` | รายวิชาที่รับผิดชอบ |
+| POST | `/api/teacher/subjects/{id}/content` | อัปเดตเนื้อหาและเอกสารรายวิชา |
+
 ---
 
 ## Business Rules
@@ -226,6 +241,7 @@ laravel/
 2. แต่ละสัปดาห์ นักเรียน **1 คน** มีได้ **1 schedule**
 3. แต่ละวัน (จันทร์–ศุกร์) ลงเรียนได้ **ไม่เกิน 6 ชั่วโมง**
 4. 1 วิชา มีอาจารย์รับผิดชอบได้หลายคน แต่มี **primary teacher** ได้เพียง 1 คน
+5. เมื่อนักเรียน submit ตารางเรียน ผู้อนุมัติคืออาจารย์ที่ปรึกษา/อาจารย์ประจำชั้นตาม `students.advisor_teacher_id`
 
 ---
 

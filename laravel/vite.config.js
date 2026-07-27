@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/auth/register.js',
                 'resources/js/admin/app.js',
                 'resources/js/student/app.js',
+                'resources/js/teacher/app.js',
             ],
             refresh: true,
         }),

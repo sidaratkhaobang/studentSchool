@@ -146,7 +146,7 @@ class EnrollmentController extends Controller
     {
         $this->authorizeEnrollment($request, $enrollment);
 
-        if (! $enrollment->isDraft()) {
+        if (! in_array($enrollment->status, ['draft', 'rejected'], true)) {
             return response()->json(['message' => 'ตารางนี้ส่งไปแล้ว'], 422);
         }
 
@@ -154,7 +154,12 @@ class EnrollmentController extends Controller
             return response()->json(['message' => 'ไม่สามารถส่งตารางว่างได้ กรุณาเพิ่มรายวิชาก่อน'], 422);
         }
 
-        $enrollment->update(['status' => 'submitted']);
+        $enrollment->update([
+            'status' => 'submitted',
+            'approved_by_teacher_id' => null,
+            'approved_at' => null,
+            'rejection_reason' => null,
+        ]);
 
         return response()->json([
             'message'    => 'ส่งตารางเรียนสำเร็จ',

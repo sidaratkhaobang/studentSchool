@@ -14,4 +14,8 @@ Route::get('/student/{any?}', fn () => view('student.app'))
     ->where('any', '.*')
     ->name('student.app');
 
+Route::get('/teacher/{any?}', fn () => view('teacher.app'))
+    ->where('any', '.*')
+    ->name('teacher.app');
+
 Route::get('/', fn () => redirect()->route('login'));

@@ -3,15 +3,26 @@
     "file": "assets/_plugin-vue_export-helper-DlAUqK2U.js",
     "name": "_plugin-vue_export-helper"
   },
-  "_dialogs-!~{005}~.js": {
-    "file": "assets/dialogs-CZ7hVag_.css",
-    "src": "_dialogs-!~{005}~.js"
+  "_dialogs-!~{006}~.js": {
+    "file": "assets/dialogs-DIgqIc3D.css",
+    "src": "_dialogs-!~{006}~.js"
   },
-  "_dialogs-CCPYncb8.js": {
-    "file": "assets/dialogs-CCPYncb8.js",
+  "_dialogs-CpUu2P3S.js": {
+    "file": "assets/dialogs-CpUu2P3S.js",
     "name": "dialogs",
     "css": [
-      "assets/dialogs-CZ7hVag_.css"
+      "assets/dialogs-DIgqIc3D.css"
+    ]
+  },
+  "_select2-!~{007}~.js": {
+    "file": "assets/select2-DqcKCFvG.css",
+    "src": "_select2-!~{007}~.js"
+  },
+  "_select2-BsO8qlh2.js": {
+    "file": "assets/select2-BsO8qlh2.js",
+    "name": "select2",
+    "css": [
+      "assets/select2-DqcKCFvG.css"
     ]
   },
   "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
@@ -28,35 +39,47 @@
     "isEntry": true
   },
   "resources/js/admin/app.js": {
-    "file": "assets/app-Ba-5yDzo.js",
+    "file": "assets/app-C3iMjnmO.js",
     "name": "app",
     "src": "resources/js/admin/app.js",
     "isEntry": true,
     "imports": [
-      "_dialogs-CCPYncb8.js",
-      "__plugin-vue_export-helper-DlAUqK2U.js"
+      "_dialogs-CpUu2P3S.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js",
+      "_select2-BsO8qlh2.js"
     ],
     "css": [
       "assets/app-BNUOA_Dc.css"
     ]
   },
   "resources/js/auth/register.js": {
-    "file": "assets/register-BwtuKNXd.js",
+    "file": "assets/register-BtHjTIJ8.js",
     "name": "register",
     "src": "resources/js/auth/register.js",
     "isEntry": true,
     "imports": [
-      "_dialogs-CCPYncb8.js"
+      "_dialogs-CpUu2P3S.js",
+      "_select2-BsO8qlh2.js"
     ]
   },
   "resources/js/student/app.js": {
-    "file": "assets/app-CnJJB1Ma.js",
+    "file": "assets/app-B6kCXWUP.js",
     "name": "app",
     "src": "resources/js/student/app.js",
     "isEntry": true,
     "imports": [
-      "_dialogs-CCPYncb8.js",
-      "__plugin-vue_export-helper-DlAUqK2U.js"
+      "_dialogs-CpUu2P3S.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js",
+      "_select2-BsO8qlh2.js"
+    ]
+  },
+  "resources/js/teacher/app.js": {
+    "file": "assets/app-DkfPuR7u.js",
+    "name": "app",
+    "src": "resources/js/teacher/app.js",
+    "isEntry": true,
+    "imports": [
+      "_dialogs-CpUu2P3S.js"
     ]
   }
 }

@@ -14,6 +14,8 @@ return new class extends Migration
             $table->string('name_th', 150);
             $table->string('name_en', 150);
             $table->text('description')->nullable();
+            $table->text('learning_content')->nullable();
+            $table->string('material_path')->nullable();
             $table->unsignedInteger('credit_hours')->default(3);
             $table->unsignedInteger('hours_per_session')->default(1);
             $table->boolean('is_active')->default(true);

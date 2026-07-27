@@ -37,9 +37,19 @@ class User extends Authenticatable
         return $this->hasOne(Student::class);
     }
 
+    public function teacher(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isTeacher(): bool
+    {
+        return $this->role === 'teacher';
     }
 
     public function isStudent(): bool
