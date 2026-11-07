@@ -387,7 +387,7 @@
 |-------|-------|
 | **Test ID** | TC-SEC-002 |
 | **Test Name** | XSS in teacher name field |
-| **Input** | first_name_th="<script>alert('xss')</script>" |
+| **Input** | `first_name_th="<script>alert('xss')</script>"` |
 | **Expected Result** | Script stored as escaped text, not executed in browser |
 
 ### TC-SEC-003: JWT Token Reuse After Logout
@@ -418,6 +418,8 @@
 
 ## Test Execution Summary Template
 
+ตารางนี้เป็นรายการกรณีทดสอบตามเอกสาร ไม่ใช่จำนวน automated tests ทั้งหมดใน repository
+
 | Test Suite | Total | Passed | Failed | Skipped |
 |------------|-------|--------|--------|---------|
 | TC-AUTH | 8 | - | - | - |
@@ -427,5 +429,33 @@
 | TC-ADMIN-STUDENT | 3 | - | - | - |
 | TC-STUDENT-PROFILE | 3 | - | - | - |
 | TC-STUDENT-ENROLLMENT | 12 | - | - | - |
+| TC-TEACHER | 6 | - | - | - |
 | TC-SECURITY | 5 | - | - | - |
-| **TOTAL** | **46** | - | - | - |
+| **TOTAL** | **52** | - | - | - |
+
+## TC-TEACHER: Teacher Workflow
+
+กรณีต่อไปนี้มี automated tests ใน [TeacherWorkflowTest.php](https://github.com/sidaratkhaobang/studentSchool/blob/main/laravel/tests/Feature/Teacher/TeacherWorkflowTest.php)
+
+| Test ID | กรณีทดสอบ | ผลที่คาดหวัง |
+| --- | --- | --- |
+| TC-TEACHER-001 | Login ด้วย role teacher และเปิด dashboard | ได้ token และข้อมูลสรุปวิชา/นักเรียน/ชั้นเรียนของตน |
+| TC-TEACHER-002 | ที่ปรึกษาอนุมัติตาราง `submitted` | สถานะ `approved` พร้อมผู้อนุมัติและเวลา |
+| TC-TEACHER-003 | อาจารย์อื่นอนุมัติตารางนอกความดูแล | HTTP 403 และไม่เปลี่ยนสถานะ |
+| TC-TEACHER-004 | ที่ปรึกษาปฏิเสธตารางพร้อมเหตุผล | สถานะ `rejected` และบันทึกเหตุผล |
+| TC-TEACHER-005 | อาจารย์อัปเดตเนื้อหาและแนบไฟล์ของวิชาที่รับผิดชอบ | บันทึกเนื้อหาและ path ของไฟล์ |
+| TC-TEACHER-006 | เปิดหน้า Teacher portal | แสดง shell และเมนู dashboard/enrollments/subjects |
+
+## ผล Automated Tests
+
+ผลที่รันในเครื่องวันที่ **2026-11-07** ก่อนเผยแพร่เอกสาร:
+
+| ชุดตรวจสอบ | ผล |
+| --- | --- |
+| `cd laravel && php artisan test` | 67 tests, 255 assertions, 0 failures |
+| `python -m unittest discover -s tests/docs -v` | 7 tests ผ่าน |
+| `python -m mkdocs build --strict` | ผ่าน |
+
+PHP 8.5 แสดง deprecation warning ของ `PDO::MYSQL_ATTR_SSL_CA` จาก Laravel config แต่ไม่มี test failure ส่วน workflow GitHub Pages รันเฉพาะ documentation tests และ build ไม่ได้รัน Laravel tests
+
+Documentation tests ตรวจหน้า HTML, navigation, ลิงก์/anchors/assets ภายใต้ `/studentSchool/`, ลิงก์จาก README, Mermaid markup, search index, การ escape ตัวอย่าง XSS และการไม่ปนไฟล์แอป/ฐานข้อมูลใน artifact การ render Mermaid จริงและเมนูมือถือยังต้องตรวจผ่านเบราว์เซอร์

@@ -1,7 +1,9 @@
 # Project Scope - StudentSchool
 
-**Updated**: 2026-07-27  
-**Branch**: `dev`  
+**Updated**: 2026-11-07
+
+**Published Branch**: `main`
+
 **Current Status**: Development phase, core Admin/Student/Teacher flows implemented
 
 ---
@@ -34,7 +36,6 @@
 
 ความสัมพันธ์หลัก:
 
-- `users.role` แยกสิทธิ์ `admin` และ `student`
 - `users.role` รองรับ `admin`, `teacher`, `student`
 - `teachers.user_id` ผูกบัญชี login ของอาจารย์กับ profile อาจารย์
 - `users` 1 คนที่เป็น student มีข้อมูลใน `students`
@@ -214,14 +215,23 @@ Teacher subject management รองรับ:
 - Teacher subject content/material management
 - Teacher UI route rendering
 
-ผลทดสอบล่าสุด:
+ผลทดสอบที่รันในเครื่องวันที่ 2026-11-07 ก่อนเผยแพร่เอกสาร (ไม่ใช่การรันทดสอบบน GitHub Pages):
 
 ```text
 php artisan test
-67 tests, 251 assertions
+67 tests, 255 assertions, 0 failures
 ```
 
 หมายเหตุ: มี PHP deprecation warning จาก `PDO::MYSQL_ATTR_SSL_CA` ใน Laravel database config เมื่อใช้ PHP รุ่นใหม่ แต่ test ยังผ่านทั้งหมด
+
+### 1.11 Documentation Website
+
+- สร้าง HTML จาก Markdown ใน `laravel/docs/` ด้วย MkDocs Material
+- มีโครงสร้างโปรเจค, Module หลัก, Business Rules, SRS, ER Diagram, Data Dictionary, Test Cases และ Project Scope
+- GitHub Actions ตรวจสอบหน้า ลิงก์ search index และ artifact ก่อน deploy GitHub Pages จาก `main`
+- URL: [StudentSchool Documentation](https://sidaratkhaobang.github.io/studentSchool/)
+- Workflow นี้เผยแพร่เฉพาะเอกสาร ไม่ใช่ Laravel application หรือฐานข้อมูล production
+- Documentation tests ผ่าน 7 tests และ `mkdocs build --strict` ผ่านในเครื่องวันที่ 2026-11-07
 
 ---
 
@@ -231,7 +241,7 @@ php artisan test
 - ตารางเรียนยังเก็บเวลาเป็น optional (`start_time`, `end_time`) แต่ UI เพิ่มวิชายังไม่ได้บังคับกรอกเวลา
 - ยังไม่มีหน้ารายงาน/export
 - ยังไม่มีระบบแจ้งเตือน
-- ยังไม่มี CI/CD pipeline
+- มี CI/CD สำหรับเอกสารแล้ว แต่ยังไม่มี CI/CD สำหรับ Laravel application
 - ยังไม่ได้ deploy production ไป Oracle Cloud Infrastructure
 - ยังไม่มี production environment hardening เช่น queue, scheduler, backup, HTTPS และ monitoring
 

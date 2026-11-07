@@ -340,6 +340,16 @@
 | PUT | /api/student/enrollments/{id}/submit | ส่ง schedule | Student |
 | GET | /api/student/subjects | ดูรายวิชาทั้งหมด | Student |
 
+### Teacher API
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /api/teacher/dashboard | จำนวนวิชา ชั้นเรียน และนักเรียนในความดูแล | Teacher |
+| GET | /api/teacher/enrollments | ตารางของนักเรียนที่ตนเป็นที่ปรึกษา | Teacher |
+| GET | /api/teacher/enrollments/{enrollment} | รายละเอียดตารางที่ส่งมาอนุมัติ | Teacher |
+| PUT | /api/teacher/enrollments/{enrollment}/status | อนุมัติหรือปฏิเสธพร้อมเหตุผล | Advisor Teacher |
+| GET | /api/teacher/subjects | รายวิชาที่รับผิดชอบ | Teacher |
+| POST | /api/teacher/subjects/{subject}/content | อัปเดตเนื้อหาและเอกสารแนบ | Assigned Teacher |
+
 ---
 
 ## 6. Use Case Diagram

@@ -28,3 +28,8 @@ yarn-error.log
 agent/node_modules
 agent/.env
 .claude/
+
+# Documentation build
+/.venv-docs/
+/site/
+__pycache__/
