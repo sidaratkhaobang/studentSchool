@@ -9,7 +9,7 @@ erDiagram
         varchar(50) username UK
         varchar(100) email UK
         varchar(255) password
-        enum role "admin,student"
+        enum role "admin,teacher,student"
         tinyint is_active
         varchar(100) remember_token
         timestamp created_at
@@ -18,6 +18,7 @@ erDiagram
 
     TEACHERS {
         bigint id PK
+        bigint user_id FK,UK "nullable"
         varchar(100) first_name_th
         varchar(100) last_name_th
         varchar(100) first_name_en
@@ -36,6 +37,8 @@ erDiagram
         varchar(150) name_th
         varchar(150) name_en
         text description
+        text learning_content
+        varchar(255) material_path
         int credit_hours
         int hours_per_session
         tinyint is_active
@@ -75,8 +78,11 @@ erDiagram
         bigint student_id FK
         date week_start
         date week_end
-        enum status "draft,submitted,approved"
+        enum status "draft,submitted,approved,rejected"
         text note
+        bigint approved_by_teacher_id FK "nullable"
+        timestamp approved_at
+        text rejection_reason
         timestamp created_at
         timestamp updated_at
     }
@@ -94,12 +100,14 @@ erDiagram
     }
 
     USERS ||--o| STUDENTS : "1 user has 1 student profile"
-    STUDENTS }o--|| TEACHERS : "student has advisor teacher"
-    SUBJECTS ||--|{ SUBJECT_TEACHERS : "1 subject assigned to M teachers"
-    TEACHERS ||--|{ SUBJECT_TEACHERS : "1 teacher teaches M subjects"
-    STUDENTS ||--|{ WEEKLY_ENROLLMENTS : "1 student has M weekly enrollments"
-    WEEKLY_ENROLLMENTS ||--|{ ENROLLMENT_COURSES : "1 enrollment has M courses"
-    SUBJECTS ||--|{ ENROLLMENT_COURSES : "1 subject in M enrollments"
+    USERS |o--o| TEACHERS : "optional teacher login account"
+    STUDENTS }o--o| TEACHERS : "optional advisor teacher"
+    SUBJECTS ||--o{ SUBJECT_TEACHERS : "subject teacher assignments"
+    TEACHERS ||--o{ SUBJECT_TEACHERS : "teacher subject assignments"
+    STUDENTS ||--o{ WEEKLY_ENROLLMENTS : "weekly schedules"
+    TEACHERS |o--o{ WEEKLY_ENROLLMENTS : "approval or rejection by teacher"
+    WEEKLY_ENROLLMENTS ||--o{ ENROLLMENT_COURSES : "weekly course items"
+    SUBJECTS ||--o{ ENROLLMENT_COURSES : "registered course items"
 ```
 
 ## Relationships Summary
@@ -107,10 +115,12 @@ erDiagram
 | Relationship | Type | Description |
 |---|---|---|
 | USERS → STUDENTS | 1:1 | Each user has one student profile |
+| USERS → TEACHERS | 0..1:0..1 | Teacher login account is optional and unique |
 | STUDENTS → TEACHERS | M:1 | Many students can have same advisor |
 | SUBJECTS → SUBJECT_TEACHERS | 1:M | One subject can be taught by multiple teachers |
 | TEACHERS → SUBJECT_TEACHERS | 1:M | One teacher can teach multiple subjects |
 | STUDENTS → WEEKLY_ENROLLMENTS | 1:M | One student can have many weekly schedules |
+| TEACHERS → WEEKLY_ENROLLMENTS | 0..1:M | Teacher who approved or rejected the schedule |
 | WEEKLY_ENROLLMENTS → ENROLLMENT_COURSES | 1:M | One week can have many course items |
 | SUBJECTS → ENROLLMENT_COURSES | 1:M | One subject can appear in many enrollments |
 
@@ -121,4 +131,5 @@ erDiagram
 3. **Days per Week**: ลงเรียนได้ 5 วัน (จันทร์-ศุกร์)
 4. **Subject-Teacher**: 1 รายวิชา มีอาจารย์ผู้รับผิดชอบได้หลายคน (1:M)
 5. **Student Status**: นักเรียนต้องได้รับการ approved ก่อนจึงจะลงทะเบียนได้
-```
+6. **Schedule Approval**: อาจารย์ที่ปรึกษาตาม `students.advisor_teacher_id` เป็นผู้อนุมัติ/ปฏิเสธตาราง
+7. **Resubmission**: ตาราง `rejected` แก้ไขและส่งใหม่ได้ โดยต้องผ่านการตรวจของอาจารย์อีกครั้ง

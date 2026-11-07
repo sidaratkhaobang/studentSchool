@@ -15,6 +15,9 @@ class WeeklyEnrollment extends Model
         'week_end',
         'status',
         'note',
+        'approved_by_teacher_id',
+        'approved_at',
+        'rejection_reason',
     ];
 
     protected function casts(): array
@@ -22,6 +25,7 @@ class WeeklyEnrollment extends Model
         return [
             'week_start' => 'date',
             'week_end' => 'date',
+            'approved_at' => 'datetime',
         ];
     }
 
@@ -33,6 +37,11 @@ class WeeklyEnrollment extends Model
     public function courses(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(EnrollmentCourse::class);
+    }
+
+    public function approvedByTeacher(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Teacher::class, 'approved_by_teacher_id');
     }
 
     public function getDailyHours(string $day): float
@@ -59,7 +68,7 @@ class WeeklyEnrollment extends Model
 
     public function canModify(): bool
     {
-        return $this->status === 'draft';
+        return in_array($this->status, ['draft', 'rejected'], true);
     }
 
     public function scopeDraft($query)

@@ -11,6 +11,7 @@ class Teacher extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'first_name_th',
         'last_name_th',
         'first_name_en',
@@ -33,6 +34,11 @@ class Teacher extends Model
         return $this->belongsToMany(Subject::class, 'subject_teachers')
             ->withPivot('is_primary')
             ->withTimestamps();
+    }
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function subjectTeachers(): \Illuminate\Database\Eloquent\Relations\HasMany

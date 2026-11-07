@@ -13,8 +13,11 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->date('week_start');
             $table->date('week_end');
-            $table->enum('status', ['draft', 'submitted', 'approved'])->default('draft');
+            $table->enum('status', ['draft', 'submitted', 'approved', 'rejected'])->default('draft');
             $table->text('note')->nullable();
+            $table->foreignId('approved_by_teacher_id')->nullable()->constrained('teachers')->nullOnDelete();
+            $table->timestamp('approved_at')->nullable();
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
 
             $table->unique(['student_id', 'week_start']);

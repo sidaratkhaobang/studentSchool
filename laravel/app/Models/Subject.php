@@ -15,6 +15,8 @@ class Subject extends Model
         'name_th',
         'name_en',
         'description',
+        'learning_content',
+        'material_path',
         'credit_hours',
         'hours_per_session',
         'is_active',

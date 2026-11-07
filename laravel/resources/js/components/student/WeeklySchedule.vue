@@ -75,6 +75,9 @@
                         <div class="smaller text-muted" v-if="c.start_time || c.end_time">
                           เวลา: {{ c.start_time || '-' }} - {{ c.end_time || '-' }}
                         </div>
+                        <a v-if="c.subject?.material_path" class="smaller d-inline-block mt-1" :href="'/storage/' + c.subject.material_path" target="_blank">
+                          <i class="bi bi-download me-1"></i>ดาวน์โหลดเอกสาร
+                        </a>
                       </div>
                     </div>
                     <div v-else class="text-muted small py-3">ว่าง</div>
@@ -166,8 +169,8 @@ export default {
       return `${primary.first_name_th || ''} ${primary.last_name_th || ''}`.trim();
     },
     formatDate(d) { return d ? new Date(d).toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' }) : '-'; },
-    statusBadge(s) { return { draft:'badge bg-secondary', submitted:'badge bg-info', approved:'badge bg-success' }[s] || 'badge bg-light text-dark'; },
-    statusLabel(s) { return { draft:'ร่าง', submitted:'รออนุมัติ', approved:'อนุมัติแล้ว' }[s] || s; }
+    statusBadge(s) { return { draft:'badge bg-secondary', submitted:'badge bg-info', approved:'badge bg-success', rejected:'badge bg-danger' }[s] || 'badge bg-light text-dark'; },
+    statusLabel(s) { return { draft:'ร่าง', submitted:'รออนุมัติ', approved:'อนุมัติแล้ว', rejected:'ไม่อนุมัติ' }[s] || s; }
   }
 };
 </script>

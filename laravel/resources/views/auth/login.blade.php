@@ -20,6 +20,10 @@
                     <span class="summary-value">Student</span>
                     <span class="summary-label">ลงทะเบียนรายวิชา</span>
                 </div>
+                <div>
+                    <span class="summary-value">Teacher</span>
+                    <span class="summary-label">อนุมัติตารางเรียน</span>
+                </div>
             </div>
         </section>
 
@@ -66,12 +70,23 @@
                         <span><i class="bi bi-person-vcard"></i> Student</span>
                         <small>student01 / Student1234!</small>
                     </button>
+                    <button type="button" class="credential-option" data-username="teacher01" data-password="Teacher1234!">
+                        <span><i class="bi bi-person-workspace"></i> Teacher</span>
+                        <small>teacher01 / Teacher1234!</small>
+                    </button>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" id="login-button">
                     <span class="spinner-border spinner-border-sm me-2 d-none" id="login-spinner"></span>
                     <span id="login-button-text">เข้าสู่ระบบ</span>
                 </button>
+
+                <div class="register-link">
+                    <span>ยังไม่มีบัญชีนักเรียน?</span>
+                    <a class="btn btn-outline-primary w-100 fw-semibold" href="/register">
+                        <i class="bi bi-person-plus me-1"></i>ลงทะเบียน
+                    </a>
+                </div>
             </form>
         </section>
     </main>
@@ -230,6 +245,20 @@
         background: #eff6ff;
     }
 
+    .register-link {
+        border-top: 1px solid #e5e7eb;
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        text-align: center;
+    }
+
+    .register-link span {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
     @media (max-width: 860px) {
         .login-panel {
             grid-template-columns: 1fr;
@@ -321,6 +350,11 @@ form.addEventListener('submit', async (event) => {
 
         if (data.user?.role === 'student') {
             window.location.href = '/student';
+            return;
+        }
+
+        if (data.user?.role === 'teacher') {
+            window.location.href = '/teacher';
             return;
         }
 

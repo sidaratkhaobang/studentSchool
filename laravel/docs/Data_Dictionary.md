@@ -8,7 +8,7 @@
 | username | VARCHAR(50) | NO | - | UNIQUE | ชื่อผู้ใช้งาน (ภาษาอังกฤษ ตัวพิมพ์เล็ก ไม่มีช่องว่าง) |
 | email | VARCHAR(100) | NO | - | UNIQUE | อีเมลผู้ใช้งาน |
 | password | VARCHAR(255) | NO | - | - | รหัสผ่าน (bcrypt hash) |
-| role | ENUM | NO | 'student' | - | บทบาท: admin, student |
+| role | ENUM | NO | 'student' | - | บทบาท: admin, teacher, student |
 | is_active | TINYINT(1) | NO | 1 | - | สถานะการใช้งาน (1=active, 0=inactive) |
 | remember_token | VARCHAR(100) | YES | NULL | - | Token สำหรับ remember me |
 | created_at | TIMESTAMP | YES | NULL | - | วันที่สร้างบัญชี |
@@ -21,6 +21,7 @@
 | Column | Type | Null | Default | Constraint | Description |
 |--------|------|------|---------|------------|-------------|
 | id | BIGINT UNSIGNED | NO | AUTO_INCREMENT | PK | รหัสอาจารย์ |
+| user_id | BIGINT UNSIGNED | YES | NULL | FK → users.id, UNIQUE | บัญชี login ของอาจารย์ |
 | first_name_th | VARCHAR(100) | NO | - | - | ชื่อจริง (ภาษาไทย) |
 | last_name_th | VARCHAR(100) | NO | - | - | นามสกุล (ภาษาไทย) |
 | first_name_en | VARCHAR(100) | NO | - | - | ชื่อจริง (ภาษาอังกฤษ) |
@@ -43,6 +44,8 @@
 | name_th | VARCHAR(150) | NO | - | - | ชื่อวิชา (ภาษาไทย) |
 | name_en | VARCHAR(150) | NO | - | - | ชื่อวิชา (ภาษาอังกฤษ) |
 | description | TEXT | YES | NULL | - | คำอธิบายรายวิชา |
+| learning_content | TEXT | YES | NULL | - | เนื้อหาการเรียนการสอนที่อาจารย์อัปเดต |
+| material_path | VARCHAR(255) | YES | NULL | - | path เอกสารประกอบการเรียนใน public storage |
 | credit_hours | INT | NO | 3 | CHECK >= 1 | จำนวนหน่วยกิต |
 | hours_per_session | INT | NO | 1 | CHECK 1-6 | จำนวนชั่วโมงต่อครั้ง |
 | is_active | TINYINT(1) | NO | 1 | - | สถานะ (1=active, 0=inactive) |
@@ -96,8 +99,11 @@
 | student_id | BIGINT UNSIGNED | NO | - | FK → students.id | รหัสนักเรียน |
 | week_start | DATE | NO | - | - | วันจันทร์ของสัปดาห์นั้น |
 | week_end | DATE | NO | - | - | วันศุกร์ของสัปดาห์นั้น |
-| status | ENUM | NO | 'draft' | - | สถานะ: draft, submitted, approved |
+| status | ENUM | NO | 'draft' | - | สถานะ: draft, submitted, approved, rejected |
 | note | TEXT | YES | NULL | - | หมายเหตุ |
+| approved_by_teacher_id | BIGINT UNSIGNED | YES | NULL | FK → teachers.id | อาจารย์ที่อนุมัติ/ไม่อนุมัติตารางเรียน |
+| approved_at | TIMESTAMP | YES | NULL | - | วันที่อนุมัติ/ไม่อนุมัติ |
+| rejection_reason | TEXT | YES | NULL | - | เหตุผลที่ไม่อนุมัติตารางเรียน |
 | created_at | TIMESTAMP | YES | NULL | - | วันที่สร้าง |
 | updated_at | TIMESTAMP | YES | NULL | - | วันที่แก้ไขล่าสุด |
 

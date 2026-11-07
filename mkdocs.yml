@@ -1,0 +1,59 @@
+site_name: StudentSchool
+site_description: เอกสารระบบลงทะเบียนเรียนรายวิชาแบบรายสัปดาห์
+site_url: https://sidaratkhaobang.github.io/studentSchool/
+repo_url: https://github.com/sidaratkhaobang/studentSchool
+repo_name: sidaratkhaobang/studentSchool
+edit_uri: edit/main/laravel/docs/
+docs_dir: laravel/docs
+site_dir: site
+use_directory_urls: false
+
+theme:
+  name: material
+  language: th
+  font: false
+  palette:
+    primary: teal
+    accent: blue
+  features:
+    - navigation.footer
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+nav:
+  - ภาพรวม: index.md
+  - โครงสร้างโปรเจค: ProjectStructure.md
+  - Module หลัก: Modules.md
+  - Business Rules: BusinessRules.md
+  - เอกสารเพิ่มเติม:
+      - SRS: SRS.md
+      - ER Diagram: ER_Diagram.md
+      - Data Dictionary: Data_Dictionary.md
+      - Test Cases: TestCases.md
+      - Project Scope: ProjectScope.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+validation:
+  nav:
+    omitted_files: warn
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn

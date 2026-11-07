@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->after('id')->constrained('users')->nullOnDelete();
             $table->string('first_name_th', 100);
             $table->string('last_name_th', 100);
             $table->string('first_name_en', 100);
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('is_active');
+            $table->unique('user_id');
             $table->index(['last_name_th', 'first_name_th']);
         });
     }

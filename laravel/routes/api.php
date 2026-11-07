@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Api\Student\EnrollmentController;
 use App\Http\Controllers\Api\Student\ProfileController;
+use App\Http\Controllers\Api\Teacher\DashboardController as TeacherDashboard;
+use App\Http\Controllers\Api\Teacher\EnrollmentApprovalController;
+use App\Http\Controllers\Api\Teacher\SubjectContentController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -54,5 +57,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/enrollments/{enrollment}/submit', [EnrollmentController::class, 'submit']);
         Route::post('/enrollments/{enrollment}/courses', [EnrollmentController::class, 'addCourse']);
         Route::delete('/enrollments/{enrollment}/courses/{courseId}', [EnrollmentController::class, 'removeCourse']);
+    });
+
+    // Teacher routes
+    Route::middleware('teacher')->prefix('teacher')->group(function () {
+        Route::get('/dashboard', [TeacherDashboard::class, 'index']);
+
+        Route::get('/enrollments', [EnrollmentApprovalController::class, 'index']);
+        Route::get('/enrollments/{enrollment}', [EnrollmentApprovalController::class, 'show']);
+        Route::put('/enrollments/{enrollment}/status', [EnrollmentApprovalController::class, 'updateStatus']);
+
+        Route::get('/subjects', [SubjectContentController::class, 'index']);
+        Route::post('/subjects/{subject}/content', [SubjectContentController::class, 'update']);
     });
 });

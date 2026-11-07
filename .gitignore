@@ -5,6 +5,7 @@ laravel/public/storage
 laravel/storage/*.key
 laravel/storage/logs/*
 laravel/storage/framework/views/*
+laravel/storage/framework/testing/*
 laravel/vendor
 laravel/.env
 laravel/.env.backup
@@ -27,3 +28,8 @@ yarn-error.log
 agent/node_modules
 agent/.env
 .claude/
+
+# Documentation build
+/.venv-docs/
+/site/
+__pycache__/
