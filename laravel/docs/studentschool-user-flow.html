@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เส้นทางผู้ใช้ StudentSchool</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&amp;display=swap">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5faf9;color:#182e31;font-family:"Noto Sans Thai",Tahoma,sans-serif}
+main{max-width:1200px;margin:auto;padding:36px 24px}h1{font-size:clamp(26px,4vw,44px);margin:0 0 20px}.diagram{overflow-x:auto}svg{display:block;width:100%;min-width:1104px}
+.lane{fill:#ebf5f2}.box{fill:#fff;stroke:#849e9b}.focus{fill:#daf1eb;stroke:#00695c}.role{font-size:18px;font-weight:700;fill:#00695c}.title{font-size:18px;font-weight:700;fill:#182e31}.sub{font-size:14px;fill:#3d5558}.flow{fill:none;stroke:#40645f;stroke-width:1.6;marker-end:url(#arrow)}.cross{stroke-dasharray:5 4}p{font-size:14px;color:#3d5558;margin:14px 0 0}@media print{svg{min-width:0}.diagram{overflow:visible}}
+</style></head><body><main><h1>เส้นทางผู้ใช้ StudentSchool</h1>
+<div class="diagram" tabindex="0" aria-label="แผนภาพเส้นทางผู้ใช้">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1104 564" role="img" aria-labelledby="studentschool-user-flow-title studentschool-user-flow-desc">
+<title id="studentschool-user-flow-title">เส้นทางผู้ใช้ StudentSchool</title>
+<desc id="studentschool-user-flow-desc">แผนภาพการเข้าสู่ระบบ การสมัครและพิจารณาบัญชีนักเรียน และการส่งตารางเรียนให้อาจารย์ที่ปรึกษาพิจารณา</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#40645f"/></marker></defs>
+
+<rect class="lane" x="0" y="136" width="1104" height="112" rx="12"/><text class="role" x="16" y="179">ผู้ดูแล</text>
+<rect class="lane" x="0" y="260" width="1104" height="112" rx="12"/><text class="role" x="16" y="303">นักเรียน</text>
+<rect class="lane" x="0" y="384" width="1104" height="112" rx="12"/><text class="role" x="16" y="427">อาจารย์</text>
+<path class="flow" d="M380 56 H444"/>
+<path class="flow" d="M560 92 V156 Q560 164 552 164 H384 Q376 164 376 172"/>
+<path class="flow" d="M512 202 H576"/>
+<path class="flow" d="M404 244 V246 Q404 254 412 254 H940 Q948 254 948 246 V244"/>
+<path class="flow" d="M532 92 V120 Q532 128 524 128 H200 Q192 128 192 136 V308 Q192 316 200 316 H220"/>
+<path class="flow cross" d="M800 56 H908 Q916 56 916 64 V148 Q916 156 908 156 H776 Q768 156 768 164 V172"/>
+<path class="flow" d="M516 316 H552"/>
+<path class="flow" d="M788 316 H824"/>
+<path class="flow cross" d="M960 352 V404"/>
+<path class="flow" d="M484 440 H532"/>
+<rect class="box" x="148" y="20" width="232" height="72" rx="10"/><text class="title" x="164" y="49">เข้าสู่ระบบ</text><text class="sub" x="164" y="73">กรอกชื่อผู้ใช้และรหัสผ่าน</text>
+<rect class="box focus" x="444" y="20" width="136" height="72" rx="10"/><text class="title" x="460" y="49">แยกตามบทบาท</text><text class="sub" x="460" y="73">เมื่อเข้าสู่ระบบสำเร็จ</text>
+<rect class="box" x="604" y="20" width="196" height="72" rx="10"/><text class="title" x="620" y="49">สมัครบัญชีนักเรียน</text><text class="sub" x="620" y="73">สร้างบัญชีสถานะรออนุมัติ</text>
+<rect class="box" x="240" y="172" width="272" height="72" rx="10"/><text class="title" x="256" y="201">เปิดแดชบอร์ดผู้ดูแล</text><text class="sub" x="256" y="225">เลือกเมนูจัดการข้อมูลหรือบัญชี</text>
+<rect class="box" x="576" y="172" width="236" height="72" rx="10"/><text class="title" x="592" y="201">พิจารณาบัญชีนักเรียน</text><text class="sub" x="592" y="225">อนุมัติ / ไม่อนุมัติ</text>
+<rect class="box" x="824" y="172" width="264" height="72" rx="10"/><text class="title" x="840" y="201">จัดการข้อมูลโรงเรียน</text><text class="sub" x="840" y="225">อาจารย์ รายวิชา และการมอบหมาย</text>
+<rect class="box" x="220" y="280" width="296" height="72" rx="10"/><text class="title" x="236" y="309">เปิดแดชบอร์ดนักเรียน</text><text class="sub" x="236" y="333">ดูตาราง สถานะบัญชี และโปรไฟล์</text>
+<rect class="box" x="552" y="280" width="236" height="72" rx="10"/><text class="title" x="568" y="309">จัดตารางรายสัปดาห์</text><text class="sub" x="568" y="333">บัญชีอนุมัติแล้วจึงสร้างแบบร่าง</text>
+<rect class="box focus" x="824" y="280" width="248" height="72" rx="10"/><text class="title" x="840" y="309">ส่งตารางให้ตรวจ</text><text class="sub" x="840" y="333">เปลี่ยนสถานะเป็นส่งแล้ว</text>
+<rect class="box" x="220" y="404" width="264" height="72" rx="10"/><text class="title" x="236" y="433">เปิดแดชบอร์ดอาจารย์</text><text class="sub" x="236" y="457">ดูห้องและนักเรียนในความดูแล</text>
+<rect class="box" x="532" y="404" width="256" height="72" rx="10"/><text class="title" x="548" y="433">จัดการเนื้อหารายวิชา</text><text class="sub" x="548" y="457">แก้ไขเนื้อหาและแนบเอกสาร</text>
+<rect class="box" x="824" y="404" width="248" height="72" rx="10"/><text class="title" x="840" y="433">พิจารณาตารางเรียน</text><text class="sub" x="840" y="457">อนุมัติ / ไม่อนุมัติพร้อมเหตุผล</text>
+<text class="role" x="824" y="520">นักเรียนดูผลการพิจารณา</text><text class="sub" x="824" y="544">หากไม่อนุมัติ แก้รายวิชาแล้วส่งใหม่ได้</text><text class="sub" x="16" y="544">เส้นประ = การส่งต่อระหว่างบทบาท</text></svg></div><p>ผู้ดูแลจัดการสถานะบัญชีนักเรียน ส่วนอาจารย์ที่ปรึกษาพิจารณาตารางเรียนที่นักเรียนส่ง</p></main></body></html>
